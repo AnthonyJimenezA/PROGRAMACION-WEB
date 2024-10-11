@@ -1,0 +1,80 @@
+﻿@model Proyecto_1__CRUD.Models.Empleado
+
+@{
+    ViewData["Title"] = "Crear Empleado";
+}
+
+<h1 class="mb-4 text-center">Crear Empleado</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+ 
+        <div class="card">
+            <div class="card-header text-center">
+                <h5>Formulario de Empleado</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Cedula" class="form-label"></label>
+                        <input asp-for="Cedula" class="form-control" />
+                        <span asp-validation-for="Cedula" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="NombreCompleto" class="form-label"></label>
+                        <input asp-for="NombreCompleto" class="form-control" />
+                        <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="FechaNacimiento" class="form-label"></label>
+                        <input asp-for="FechaNacimiento" class="form-control" type="date" />
+                        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Lateralidad" class="form-label"></label>
+                        <select asp-for="Lateralidad" class="form-control">
+                            <option value="">Seleccione Lateralidad</option>
+                            <option value="Izquierda">Izquierda</option>
+                            <option value="Derecha">Derecha</option>
+                            <option value="Ambidiestro">Ambidiestro</option>
+                        </select>
+                        <span asp-validation-for="Lateralidad" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="FechaIngreso" class="form-label"></label>
+                        <input asp-for="FechaIngreso" class="form-control" type="date" />
+                        <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="SalarioPorHora" class="form-label"></label>
+                        <input asp-for="SalarioPorHora" class="form-control" />
+                        <span asp-validation-for="SalarioPorHora" class="text-danger"></span>
+                    </div>
+
+                  
+                    <div class="form-group mb-3 text-center">
+                        <input type="submit" value="Crear" class="btn btn-primary" />
+                    </div>
+                </form>
+
+            
+                <div class="text-center">
+                    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

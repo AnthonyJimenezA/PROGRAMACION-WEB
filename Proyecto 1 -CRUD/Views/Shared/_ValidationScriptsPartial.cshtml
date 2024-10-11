@@ -1,2 +1,14 @@
-﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+﻿@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"
+                integrity="sha384-5DoyPmrqPhky4JcT5Pt5E03MI1t3BWva8eGDJ1Dg0jgTqOSmV+PngQkM/lD+AZ6x"
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"
+                integrity="sha384-rZfj/ogBloosX2gS2J9dPbEJO6bH83aEABn9l+e9cE5UMcNQ1z9RqIEmrFQV8gY2"
+                crossorigin="anonymous"></script>
+    </environment>
+}

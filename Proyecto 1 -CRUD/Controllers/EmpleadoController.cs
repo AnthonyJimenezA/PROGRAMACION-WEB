@@ -15,45 +15,21 @@ namespace Proyecto_1__CRUD.Controllers
             _logger = logger;
         }
 
-        // GET: Empleado/Index
-        public async Task<IActionResult> Index()
+        // GET: Empleado
+        public IActionResult Index(string searchTerm = null)
         {
             try
             {
-                var empleados = await _empleadoService.ObtenerEmpleadosAsync();
+                List<Empleado> empleados = string.IsNullOrEmpty(searchTerm)
+                    ? _empleadoService.ObtenerEmpleados()
+                    : _empleadoService.BuscarEmpleadosPorCedula(searchTerm);
+
                 return View(empleados);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener la lista de empleados.");
                 return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de empleados." });
-            }
-        }
-
-        // GET: Empleado/Details/cedula
-        public async Task<IActionResult> Details(string cedula)
-        {
-            if (string.IsNullOrEmpty(cedula))
-            {
-                _logger.LogWarning("Detalles del empleado solicitados sin cédula.");
-                return BadRequest("Cédula no proporcionada.");
-            }
-
-            try
-            {
-                var empleado = await _empleadoService.ObtenerEmpleadoPorCedulaAsync(cedula);
-                if (empleado == null)
-                {
-                    _logger.LogWarning($"Empleado con cédula {cedula} no encontrado.");
-                    return NotFound($"Empleado con cédula {cedula} no encontrado.");
-                }
-
-                return View(empleado);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener detalles del empleado con cédula {cedula}.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener detalles del empleado." });
             }
         }
 
@@ -66,190 +42,93 @@ namespace Proyecto_1__CRUD.Controllers
         // POST: Empleado/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Empleado empleadoModel)
+        public IActionResult Create(Empleado empleado)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(empleadoModel);
-            }
-
-            try
-            {
-                var empleado = new Empleado
+                bool added = _empleadoService.AgregarEmpleado(empleado);
+                if (added)
                 {
-                    Cedula = empleadoModel.Cedula,
-                    NombreCompleto = empleadoModel.NombreCompleto,
-                    FechaNacimiento = empleadoModel.FechaNacimiento,
-                    Lateralidad = empleadoModel.Lateralidad,
-                    FechaIngreso = empleadoModel.FechaIngreso,
-                    SalarioPorHora = empleadoModel.SalarioPorHora
-                };
-
-                var resultado = await _empleadoService.AgregarEmpleadoAsync(empleado);
-                if (resultado)
-                {
-                    _logger.LogInformation($"Empleado creado exitosamente con cédula {empleado.Cedula}.");
+                    TempData["SuccessMessage"] = "Empleado creado exitosamente.";
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
                     ModelState.AddModelError("", "Ya existe un empleado con esa cédula.");
-                    _logger.LogWarning($"Intento de crear empleado con cédula existente: {empleado.Cedula}.");
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al crear un nuevo empleado.");
-                ModelState.AddModelError("", "Ocurrió un error al crear el empleado.");
-            }
-
-            return View(empleadoModel);
+            return View(empleado);
         }
 
         // GET: Empleado/Edit/cedula
-        public async Task<IActionResult> Edit(string cedula)
+        public IActionResult Edit(string cedula)
         {
-            if (string.IsNullOrEmpty(cedula))
+            if (cedula == null)
             {
-                _logger.LogWarning("Edición de empleado solicitada sin cédula.");
-                return BadRequest("Cédula no proporcionada.");
+                return NotFound();
             }
 
-            try
+            Empleado empleado = _empleadoService.ObtenerEmpleadoPorCedula(cedula);
+            if (empleado == null)
             {
-                var empleado = await _empleadoService.ObtenerEmpleadoPorCedulaAsync(cedula);
-                if (empleado == null)
-                {
-                    _logger.LogWarning($"Empleado con cédula {cedula} no encontrado para edición.");
-                    return NotFound($"Empleado con cédula {cedula} no encontrado.");
-                }
-
-                var empleadoViewModel = new Empleado
-                {
-                    Cedula = empleado.Cedula,
-                    NombreCompleto = empleado.NombreCompleto,
-                    FechaNacimiento = empleado.FechaNacimiento,
-                    Lateralidad = empleado.Lateralidad,
-                    FechaIngreso = empleado.FechaIngreso,
-                    SalarioPorHora = empleado.SalarioPorHora
-                };
-
-                return View(empleadoViewModel);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener el empleado con cédula {cedula} para edición.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener el empleado para edición." });
-            }
+            return View(empleado);
         }
 
-        // POST: Empleado/Edit/cedula
+        // POST: Empleado/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string cedula, Empleado empleadoModel)
+        public IActionResult Edit(Empleado empleado)
         {
-            if (cedula != empleadoModel.Cedula)
+            if (ModelState.IsValid)
             {
-                _logger.LogWarning($"Cédulas no coinciden en la edición: {cedula} != {empleadoModel.Cedula}");
-                return BadRequest("Cédula no coincide.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(empleadoModel);
-            }
-
-            try
-            {
-                var empleado = new Empleado
+                bool updated = _empleadoService.ActualizarEmpleado(empleado);
+                if (updated)
                 {
-                    Cedula = empleadoModel.Cedula,
-                    NombreCompleto = empleadoModel.NombreCompleto,
-                    FechaNacimiento = empleadoModel.FechaNacimiento,
-                    Lateralidad = empleadoModel.Lateralidad,
-                    FechaIngreso = empleadoModel.FechaIngreso,
-                    SalarioPorHora = empleadoModel.SalarioPorHora
-                };
-
-                var resultado = await _empleadoService.ActualizarEmpleadoAsync(empleado);
-                if (resultado)
-                {
-                    _logger.LogInformation($"Empleado actualizado exitosamente con cédula {empleado.Cedula}.");
+                    TempData["SuccessMessage"] = "Empleado actualizado exitosamente.";
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
                     ModelState.AddModelError("", "No se pudo actualizar el empleado.");
-                    _logger.LogWarning($"No se pudo actualizar el empleado con cédula {empleado.Cedula}.");
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al actualizar el empleado con cédula {cedula}.");
-                ModelState.AddModelError("", "Ocurrió un error al actualizar el empleado.");
-            }
-
-            return View(empleadoModel);
+            return View(empleado);
         }
 
         // GET: Empleado/Delete/cedula
-        public async Task<IActionResult> Delete(string cedula)
+        public IActionResult Delete(string cedula)
         {
-            if (string.IsNullOrEmpty(cedula))
+            if (cedula == null)
             {
-                _logger.LogWarning("Eliminación de empleado solicitada sin cédula.");
-                return BadRequest("Cédula no proporcionada.");
+                return NotFound();
             }
 
-            try
+            Empleado empleado = _empleadoService.ObtenerEmpleadoPorCedula(cedula);
+            if (empleado == null)
             {
-                var empleado = await _empleadoService.ObtenerEmpleadoPorCedulaAsync(cedula);
-                if (empleado == null)
-                {
-                    _logger.LogWarning($"Empleado con cédula {cedula} no encontrado para eliminación.");
-                    return NotFound($"Empleado con cédula {cedula} no encontrado.");
-                }
+                return NotFound();
+            }
 
-                return View(empleado);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener el empleado con cédula {cedula} para eliminación.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener el empleado para eliminación." });
-            }
+            return View(empleado);
         }
 
-        // POST: Empleado/Delete/cedula
+        // POST: Empleado/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string cedula)
+        public IActionResult DeleteConfirmed(string cedula)
         {
-            if (string.IsNullOrEmpty(cedula))
+            bool deleted = _empleadoService.EliminarEmpleado(cedula);
+            if (deleted)
             {
-                _logger.LogWarning("Eliminación de empleado confirmada sin cédula.");
-                return BadRequest("Cédula no proporcionada.");
+                TempData["SuccessMessage"] = "Empleado eliminado exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
-
-            try
+            else
             {
-                var resultado = await _empleadoService.EliminarEmpleadoAsync(cedula);
-                if (resultado)
-                {
-                    _logger.LogInformation($"Empleado eliminado exitosamente con cédula {cedula}.");
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    _logger.LogWarning($"Empleado con cédula {cedula} no encontrado para eliminación.");
-                    return NotFound($"Empleado con cédula {cedula} no encontrado.");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al eliminar el empleado con cédula {cedula}.");
-                return View("Error", new ErrorViewModel { Message = "Error al eliminar el empleado." });
+                return NotFound();
             }
         }
-      
     }
 }

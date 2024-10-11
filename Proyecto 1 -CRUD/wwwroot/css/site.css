@@ -1,22 +1,48 @@
-html {
-  font-size: 14px;
-}
+/* wwwroot/css/site.css */
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
+/* Estilos personalizados */
 
 body {
-  margin-bottom: 60px;
+    background-color: #f8f9fa;
+}
+
+h1, h3, h4 {
+    color: #343a40;
+}
+
+.card {
+    margin-bottom: 20px;
+}
+
+.btn {
+    min-width: 80px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.alert {
+    margin-top: 20px; 
+    margin-bottom: 20px; 
+  
+}
+.flex-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.icon-action {
+    color: #808080;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.icon-action-delete {
+    color: #dc3545; 
+    text-decoration: none;
 }

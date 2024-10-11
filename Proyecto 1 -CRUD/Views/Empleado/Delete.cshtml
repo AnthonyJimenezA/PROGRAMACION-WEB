@@ -1,0 +1,73 @@
+﻿@model Proyecto_1__CRUD.Models.Empleado
+
+@{
+    ViewData["Title"] = "Eliminar Empleado";
+}
+
+<h1 class="mb-4 text-center">Eliminar Empleado</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card">
+            <div class="card-header text-center">
+                <h5>Confirmación de Eliminación</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center">¿Estás seguro de que deseas eliminar este empleado?</h3>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-6 fw-bold">
+                        Cédula:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.Cedula
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Nombre Completo:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.NombreCompleto
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Fecha Nacimiento:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.FechaNacimiento.ToShortDateString()
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Lateralidad:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.Lateralidad
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Fecha Ingreso:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.FechaIngreso.ToShortDateString()
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Salario Por Hora:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.SalarioPorHora
+                    </dd>
+                </dl>
+
+                <form asp-action="DeleteConfirmed" method="post">
+                    <input type="hidden" asp-for="Cedula" />
+                    <div class="form-group mb-3 text-center">
+                        <input type="submit" value="Eliminar" class="btn btn-danger me-2" />
+                        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

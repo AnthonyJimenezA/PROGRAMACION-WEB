@@ -1,7 +1,15 @@
+using Proyecto_1__CRUD.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+
+
+// Register your services
+builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
+
 
 var app = builder.Build();
 

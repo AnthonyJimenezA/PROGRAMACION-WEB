@@ -1,4 +1,13 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// wwwroot/js/site.js
 
-// Write your JavaScript code.
+// Función para inicializar alertas Bootstrap
+function initializeAlerts() {
+    const alertList = document.querySelectorAll('.alert-dismissible');
+    alertList.forEach(function (alert) {
+        new bootstrap.Alert(alert);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initializeAlerts();
+});

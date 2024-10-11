@@ -7,4 +7,14 @@
     <RootNamespace>Proyecto_1__CRUD</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Maquinaria\" />
+    <Folder Include="Views\Cliente\" />
+    <Folder Include="Views\Mantenimiento\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.12" />
+  </ItemGroup>
+
 </Project>
