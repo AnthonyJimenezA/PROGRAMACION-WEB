@@ -15,7 +15,7 @@ namespace Proyecto_1__CRUD.Models
 
         [Required(ErrorMessage = "El tipo de maquinaria es obligatorio.")]
         [Display(Name = "Tipo")]
-        public string Tipo { get; set; } // Ejemplos: Shindaiwa, Corta Setos, Motosierra, Rastrillo, Carretillo, Otros
+        public string Tipo { get; set; } 
 
         [Required(ErrorMessage = "Las horas de uso actuales son obligatorias.")]
         [Range(0, double.MaxValue, ErrorMessage = "Las horas de uso actuales deben ser un valor positivo.")]

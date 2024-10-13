@@ -1,0 +1,130 @@
+﻿@model Proyecto_1__CRUD.Models.Mantenimiento
+
+@{
+    ViewData["Title"] = "Crear Mantenimiento";
+}
+
+<h1 class="mb-4 text-center">Crear Mantenimiento</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-center">
+                <h5>Formulario de Mantenimiento</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="IdCliente" class="form-label"></label>
+                        <input asp-for="IdCliente" class="form-control" />
+                        <span asp-validation-for="IdCliente" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="FechaEjecutado" class="form-label"></label>
+                        <input asp-for="FechaEjecutado" class="form-control" type="date" />
+                        <span asp-validation-for="FechaEjecutado" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="FechaAgendado" class="form-label"></label>
+                        <input asp-for="FechaAgendado" class="form-control" type="date" />
+                        <span asp-validation-for="FechaAgendado" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="M2Propiedad" class="form-label"></label>
+                        <input asp-for="M2Propiedad" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="M2Propiedad" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="M2CercaViva" class="form-label"></label>
+                        <input asp-for="M2CercaViva" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="M2CercaViva" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="TipoZacate" class="form-label"></label>
+                        <select asp-for="TipoZacate" class="form-control">
+                            <option value="">Seleccione Tipo de Zacate</option>
+                            <option value="San Agustín">San Agustín</option>
+                            <option value="Toro">Toro</option>
+                            <option value="Dulce">Dulce</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <span asp-validation-for="TipoZacate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>¿Se le ha aplicado algún producto?</label>
+                        <div class="form-check">
+                            <input asp-for="ProductoAplicado" type="checkbox" class="form-check-input" id="productoAplicado" />
+                            <label class="form-check-label" for="productoAplicado">Sí</label>
+                        </div>
+                        <span asp-validation-for="ProductoAplicado" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Producto" class="form-label"></label>
+                        <select asp-for="Producto" class="form-control">
+                            <option value="">Seleccione Producto Aplicado</option>
+                            <option value="Random">Random</option>
+                            <option value="Coyolillo">Coyolillo</option>
+                            <option value="Hoja Ancha">Hoja Ancha</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <span asp-validation-for="Producto" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CostoChapiaPorM2" class="form-label"></label>
+                        <input asp-for="CostoChapiaPorM2" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="CostoChapiaPorM2" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CostoAplicacionProductoPorM2" class="form-label"></label>
+                        <input asp-for="CostoAplicacionProductoPorM2" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="CostoAplicacionProductoPorM2" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="IVA" class="form-label"></label>
+                        <input asp-for="IVA" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="IVA" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Estado" class="form-label"></label>
+                        <select asp-for="Estado" class="form-control">
+                            <option value="">Seleccione Estado</option>
+                            <option value="En proceso">En proceso</option>
+                            <option value="Facturado">Facturado</option>
+                            <option value="Agendado">Agendado</option>
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3 d-flex justify-content-between">
+                        <div>
+                            <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+                        </div>
+                        <div>
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

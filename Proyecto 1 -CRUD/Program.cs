@@ -9,7 +9,9 @@ builder.Services.AddControllersWithViews();
 
 // Register your services
 builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
-
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IMaquinariaService, MaquinariaService>();
+builder.Services.AddScoped<IMantenimientoService, MantenimientoService>();
 
 var app = builder.Build();
 

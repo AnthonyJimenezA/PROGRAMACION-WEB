@@ -1,10 +1,10 @@
-﻿@model Proyecto_1__CRUD.Models.Empleado
+﻿@model Proyecto_1__CRUD.Models.Cliente
 
 @{
-    ViewData["Title"] = "Eliminar Empleado";
+    ViewData["Title"] = "Eliminar Cliente";
 }
 
-<h1 class="mb-4 text-center">Eliminar Empleado</h1>
+<h1 class="mb-4 text-center">Eliminar Cliente</h1>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
@@ -14,14 +14,14 @@
                 <h5>Confirmación de Eliminación</h5>
             </div>
             <div class="card-body">
-                <h3 class="text-center">¿Estás seguro de que deseas eliminar este empleado?</h3>
+                <h3 class="text-center">¿Estás seguro de que deseas eliminar este cliente?</h3>
                 <hr />
                 <dl class="row">
                     <dt class="col-sm-6 fw-bold">
-                        Cédula:
+                        Identificación:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.Cedula
+                        @Model.Identificacion
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
@@ -32,36 +32,50 @@
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Fecha Nacimiento:
+                        Provincia:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.FechaNacimiento.ToShortDateString()
+                        @Model.Provincia
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Lateralidad:
+                        Cantón:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.Lateralidad
+                        @Model.Canton
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Fecha Ingreso:
+                        Distrito:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.FechaIngreso.ToShortDateString()
+                        @Model.Distrito
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Salario Por Hora:
+                        Direccion Exacta:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.SalarioPorHora
+                        @Model.DireccionExacta
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Preferencia Invierno:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.PreferenciaInvierno
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Preferencia Verano:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.PreferenciaVerano
                     </dd>
                 </dl>
 
                 <form asp-action="Delete" method="post">
-                    <input type="hidden" asp-for="Cedula" />
+                    <input type="hidden" asp-for="Identificacion" />
                     <div class="form-group mb-3 text-center">
                         <input type="submit" value="Eliminar" class="btn btn-danger me-2" />
                         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>

@@ -1,7 +1,4 @@
 ﻿@using Proyecto_1__CRUD.Models
-@{
-    Layout = null;
-}
 
 <!DOCTYPE html>
 <html lang="es">
@@ -11,38 +8,51 @@
     <title>@ViewData["Title"] - Jardinería Hermanos Hernández</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/layout.css" /> <!-- Enlace al nuevo archivo CSS -->
     <script src="https://kit.fontawesome.com/bf19500a1f.js" crossorigin="anonymous"></script>
-
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-light p-4">
-            <a class="navbar-brand" href="@Url.Action("Index", "Home")">Jardinería Hermanos Hernández</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Home")">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Empleado")">Empleados</a>
-                    </li>
-                    <!-- Agrega más enlaces según sea necesario -->
-                </ul>
-            </div>
-        </nav>
-    </header>
-    <div class="container mt-4">
-        @RenderBody()
-    </div>
-    <footer class="bg-light text-center text-lg-start mt-4">
-        <div class="text-center p-3">
-            © @DateTime.Now.Year - Jardinería Hermanos Hernández
+    <div class="wrapper">
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-light bg-light p-4">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")">Jardinería Hermanos Hernández</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Home")">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Empleado")">Empleados</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Cliente")">Clientes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Maquinaria")">Maquinaria</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Mantenimiento")">Maquinaria</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container content-wrapper mt-4">
+            @RenderBody()
         </div>
-    </footer>
+
+        <footer>
+            <div class="text-center p-3">
+                © @DateTime.Now.Year - Jardinería Hermanos Hernández
+            </div>
+        </footer>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js"></script>

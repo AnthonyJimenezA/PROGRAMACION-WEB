@@ -4,10 +4,11 @@ namespace Proyecto_1__CRUD.Services
 {
     public interface IMaquinariaService
     {
-        Task<List<Maquinaria>> ObtenerMaquinariasAsync();
-        Task<Maquinaria> ObtenerMaquinariaPorIdAsync(int idInventario);
-        Task<bool> AgregarMaquinariaAsync(Maquinaria maquinaria);
-        Task<bool> ActualizarMaquinariaAsync(Maquinaria maquinaria);
-        Task<bool> EliminarMaquinariaAsync(int idInventario);
+        List<Maquinaria> ObtenerMaquinarias();
+        Maquinaria ObtenerMaquinariaPorId(int idInventario);
+        bool AgregarMaquinaria(Maquinaria maquinaria);
+        bool ActualizarMaquinaria(Maquinaria maquinaria);
+        bool EliminarMaquinaria(int idInventario);
+        List<Maquinaria> BuscarMaquinariasPorId(string searchTerm);
     }
 }

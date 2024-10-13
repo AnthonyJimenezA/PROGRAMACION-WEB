@@ -1,0 +1,114 @@
+﻿@model Proyecto_1__CRUD.Models.Mantenimiento
+
+@{
+    ViewData["Title"] = "Eliminar Mantenimiento";
+}
+
+<h1 class="mb-4 text-center">Eliminar Mantenimiento</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+
+        <div class="card">
+            <div class="card-header text-center">
+                <h5>Confirmación de Eliminación</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center">¿Estás seguro de que deseas eliminar este mantenimiento?</h3>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-6 fw-bold">
+                        ID Cliente:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.IdCliente
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Fecha Ejecutado:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.FechaEjecutado.ToString("yyyy-MM-dd")
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Fecha Agendado:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.FechaAgendado.ToString("yyyy-MM-dd")
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        M2 Propiedad:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.M2Propiedad
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        M2 Cerca Viva:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.M2CercaViva
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Tipo de Zacate:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.TipoZacate
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        ¿Producto Aplicado?
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.ProductoAplicado
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Costo Chapia por m²:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.CostoChapiaPorM2
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Costo Aplicación Producto por m²:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.CostoAplicacionProductoPorM2
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        IVA:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.IVA
+                    </dd>
+
+                    <dt class="col-sm-6 fw-bold">
+                        Estado:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Model.Estado
+                    </dd>
+                </dl>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="IdCliente" />
+                    <div class="form-group mb-3 text-center">
+                        <input type="submit" value="Eliminar" class="btn btn-danger me-2" />
+                        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

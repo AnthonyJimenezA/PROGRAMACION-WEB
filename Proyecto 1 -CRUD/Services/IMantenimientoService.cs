@@ -4,10 +4,12 @@ namespace Proyecto_1__CRUD.Services
 {
     public interface IMantenimientoService
     {
-        Task<List<Mantenimiento>> ObtenerMantenimientosAsync();
-        Task<Mantenimiento> ObtenerMantenimientoPorIdAsync(int idMantenimiento);
-        Task<bool> AgregarMantenimientoAsync(Mantenimiento mantenimiento);
-        Task<bool> ActualizarMantenimientoAsync(Mantenimiento mantenimiento);
-        Task<bool> EliminarMantenimientoAsync(int idMantenimiento);
+        List<Mantenimiento> ObtenerMantenimientos();
+        Mantenimiento ObtenerMantenimientoPorId(int idMantenimiento);
+        bool AgregarMantenimiento(Mantenimiento mantenimiento);
+        bool ActualizarMantenimiento(Mantenimiento mantenimiento);
+        bool EliminarMantenimiento(int idMantenimiento);
+        List<Mantenimiento> BuscarMantenimientosPorId(string searchTerm);
+
     }
 }

@@ -4,10 +4,11 @@ namespace Proyecto_1__CRUD.Services
 {
     public interface IClienteService
     {
-        Task<List<Cliente>> ObtenerClientesAsync();
-        Task<Cliente> ObtenerClientePorIdAsync(string identificacion);
-        Task<bool> AgregarClienteAsync(Cliente cliente);
-        Task<bool> ActualizarClienteAsync(Cliente cliente);
-        Task<bool> EliminarClienteAsync(string identificacion);
+        List<Cliente> ObtenerClientes();
+        Cliente ObtenerClientePorId(string identificacion);
+        bool AgregarCliente(Cliente cliente);
+        bool ActualizarCliente(Cliente cliente);
+        bool EliminarCliente(string identificacion);
+        List<Cliente> BuscarClientesPorCedula(string searchTerm);
     }
 }

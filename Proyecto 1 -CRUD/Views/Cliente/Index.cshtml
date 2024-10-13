@@ -1,10 +1,10 @@
-﻿@model IEnumerable<Proyecto_1__CRUD.Models.Empleado>
+﻿@model IEnumerable<Proyecto_1__CRUD.Models.Cliente>
 
 @{
-    ViewData["Title"] = "Empleados";
+    ViewData["Title"] = "Clientes";
 }
 
-<h1 class="card-title mb-4">Empleados</h1>
+<h1 class="card-title mb-4">Clientes</h1>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -13,7 +13,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
 
 <div class="mb-3 d-flex justify-content-between">
     <div class="col-3">
@@ -33,10 +32,12 @@
             <tr>
                 <th>Cédula</th>
                 <th>Nombre Completo</th>
-                <th>Fecha de Nacimiento</th>
-                <th>Lateralidad</th>
-                <th>Fecha de Ingreso</th>
-                <th>Salario por Hora</th>
+                <th>Provincia</th>
+                <th>Cantón</th>
+                <th>Distrito</th>
+                <th>Direccion exacta</th>
+                <th>Invierno</th>
+                <th>Verano</th>
                 <th></th>
             </tr>
         </thead>
@@ -44,17 +45,19 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Cedula)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Identificacion)</td>
                     <td>@Html.DisplayFor(modelItem => item.NombreCompleto)</td>
-                    <td>@item.FechaNacimiento.ToShortDateString()</td>
-                    <td>@Html.DisplayFor(modelItem => item.Lateralidad)</td>
-                    <td>@item.FechaIngreso.ToShortDateString()</td>
-                    <td>@Html.DisplayFor(modelItem => item.SalarioPorHora)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Provincia)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Canton)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Distrito)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DireccionExacta)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PreferenciaInvierno)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PreferenciaVerano)</td>
                     <td class="flex-cell">
-                        <a href="@Url.Action("Edit", new { cedula = item.Cedula })" class="icon-action" title="Editar">
+                        <a href="@Url.Action("Edit", new { identificacion = item.Identificacion })" class="icon-action" title="Editar">
                             <i class="fas fa-edit fa-lg"></i>
                         </a>
-                        <a href="@Url.Action("Delete", new { cedula = item.Cedula })" class="icon-action-delete" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este empleado?');">
+                        <a href="@Url.Action("Delete", new { identificacion = item.Identificacion })" class="icon-action-delete" title="Eliminar">
                             <i class="fas fa-trash-alt fa-lg"></i>
                         </a>
                     </td>

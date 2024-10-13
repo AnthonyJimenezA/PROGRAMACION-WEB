@@ -1,0 +1,81 @@
+﻿@model Proyecto_1__CRUD.Models.Maquinaria
+
+@{
+    ViewData["Title"] = "Crear Maquinaria";
+}
+
+<h1 class="mb-4 text-center">Crear Maquinaria</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h5>Formulario de Maquinaria</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="IdInventario" class="form-label"></label>
+                        <input asp-for="IdInventario" class="form-control" />
+                        <span asp-validation-for="IdInventario" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Descripcion" class="form-label"></label>
+                        <input asp-for="Descripcion" class="form-control" />
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Tipo" class="form-label"></label>
+                        <select asp-for="Tipo" class="form-control">
+                            <option value="">Seleccione Tipo</option>
+                            <option value="shindaiwa">Shindaiwa</option>
+                            <option value="corta setos">Corta Setos</option>
+                            <option value="motosierra">Motosierra</option>
+                            <option value="rastrillo">Rastrillo</option>
+                            <option value="carretillo">Carretillo</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                        <span asp-validation-for="Tipo" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="HorasUsoActuales" class="form-label"></label>
+                        <input asp-for="HorasUsoActuales" class="form-control" />
+                        <span asp-validation-for="HorasUsoActuales" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="HorasUsoMaximoDia" class="form-label"></label>
+                        <input asp-for="HorasUsoMaximoDia" class="form-control" />
+                        <span asp-validation-for="HorasUsoMaximoDia" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="HorasUsoParaMantenimiento" class="form-label"></label>
+                        <input asp-for="HorasUsoParaMantenimiento" class="form-control" />
+                        <span asp-validation-for="HorasUsoParaMantenimiento" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3 d-flex justify-content-between">
+                        <div>
+                            <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+                        </div>
+                        <div>
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

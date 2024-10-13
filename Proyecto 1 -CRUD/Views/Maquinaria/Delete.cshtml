@@ -1,10 +1,10 @@
-﻿@model Proyecto_1__CRUD.Models.Empleado
+﻿@model Proyecto_1__CRUD.Models.Maquinaria
 
 @{
-    ViewData["Title"] = "Eliminar Empleado";
+    ViewData["Title"] = "Eliminar Maquinaria";
 }
 
-<h1 class="mb-4 text-center">Eliminar Empleado</h1>
+<h1 class="mb-4 text-center">Eliminar Maquinaria</h1>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
@@ -14,54 +14,54 @@
                 <h5>Confirmación de Eliminación</h5>
             </div>
             <div class="card-body">
-                <h3 class="text-center">¿Estás seguro de que deseas eliminar este empleado?</h3>
+                <h3 class="text-center">¿Estás seguro de que deseas eliminar esta maquinaria?</h3>
                 <hr />
                 <dl class="row">
                     <dt class="col-sm-6 fw-bold">
-                        Cédula:
+                        ID Inventario:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.Cedula
+                        @Model.IdInventario
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Nombre Completo:
+                        Descripción:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.NombreCompleto
+                        @Model.Descripcion
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Fecha Nacimiento:
+                        Tipo:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.FechaNacimiento.ToShortDateString()
+                        @Model.Tipo
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Lateralidad:
+                        Horas de Uso Actuales:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.Lateralidad
+                        @Model.HorasUsoActuales
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Fecha Ingreso:
+                        Horas de Uso Máximo por Día:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.FechaIngreso.ToShortDateString()
+                        @Model.HorasUsoMaximoDia
                     </dd>
 
                     <dt class="col-sm-6 fw-bold">
-                        Salario Por Hora:
+                        Horas de Uso para Mantenimiento:
                     </dt>
                     <dd class="col-sm-6">
-                        @Model.SalarioPorHora
+                        @Model.HorasUsoParaMantenimiento
                     </dd>
                 </dl>
 
                 <form asp-action="Delete" method="post">
-                    <input type="hidden" asp-for="Cedula" />
+                    <input type="hidden" asp-for="IdInventario" />
                     <div class="form-group mb-3 text-center">
                         <input type="submit" value="Eliminar" class="btn btn-danger me-2" />
                         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>

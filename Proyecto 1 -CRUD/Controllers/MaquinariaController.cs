@@ -15,45 +15,21 @@ namespace Proyecto_1__CRUD.Controllers
             _logger = logger;
         }
 
-        // GET: Maquinaria/Index
-        public async Task<IActionResult> Index()
+        // GET: Maquinaria
+        public IActionResult Index(string searchTerm = null)
         {
             try
             {
-                var maquinarias = await _maquinariaService.ObtenerMaquinariasAsync();
+                List<Maquinaria> maquinarias = string.IsNullOrEmpty(searchTerm)
+                    ? _maquinariaService.ObtenerMaquinarias()
+                    : _maquinariaService.BuscarMaquinariasPorId(searchTerm);
+
                 return View(maquinarias);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener la lista de maquinarias.");
                 return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de maquinarias." });
-            }
-        }
-
-        // GET: Maquinaria/Details/idInventario
-        public async Task<IActionResult> Details(int idInventario)
-        {
-            if (idInventario <= 0)
-            {
-                _logger.LogWarning("Detalles de maquinaria solicitados con ID inválido.");
-                return BadRequest("ID de maquinaria no válido.");
-            }
-
-            try
-            {
-                var maquinaria = await _maquinariaService.ObtenerMaquinariaPorIdAsync(idInventario);
-                if (maquinaria == null)
-                {
-                    _logger.LogWarning($"Maquinaria con ID {idInventario} no encontrada.");
-                    return NotFound($"Maquinaria con ID {idInventario} no encontrada.");
-                }
-
-                return View(maquinaria);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener detalles de maquinaria con ID {idInventario}.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener detalles de la maquinaria." });
             }
         }
 
@@ -66,187 +42,92 @@ namespace Proyecto_1__CRUD.Controllers
         // POST: Maquinaria/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Maquinaria maquinariaModel)
+        public IActionResult Create(Maquinaria maquinaria)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(maquinariaModel);
-            }
-
-            try
-            {
-                var maquinaria = new Maquinaria
+                bool added = _maquinariaService.AgregarMaquinaria(maquinaria);
+                if (added)
                 {
-                    Descripcion = maquinariaModel.Descripcion,
-                    Tipo = maquinariaModel.Tipo,
-                    HorasUsoActuales = maquinariaModel.HorasUsoActuales,
-                    HorasUsoMaximoDia = maquinariaModel.HorasUsoMaximoDia,
-                    HorasUsoParaMantenimiento = maquinariaModel.HorasUsoParaMantenimiento
-                };
-
-                var resultado = await _maquinariaService.AgregarMaquinariaAsync(maquinaria);
-                if (resultado)
-                {
-                    _logger.LogInformation($"Maquinaria creada exitosamente con ID {maquinaria.IdInventario}.");
+                    TempData["SuccessMessage"] = "Maquinaria creada exitosamente.";
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    ModelState.AddModelError("", "No se pudo crear la maquinaria.");
-                    _logger.LogWarning($"Intento de crear maquinaria fallido.");
+                    ModelState.AddModelError("", "Ya existe una maquinaria con ese ID de inventario.");
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al crear una nueva maquinaria.");
-                ModelState.AddModelError("", "Ocurrió un error al crear la maquinaria.");
-            }
-
-            return View(maquinariaModel);
+            return View(maquinaria);
         }
 
         // GET: Maquinaria/Edit/idInventario
-        public async Task<IActionResult> Edit(int idInventario)
+        public IActionResult Edit(int idInventario)
         {
-            if (idInventario <= 0)
+            if (idInventario == 0)
             {
-                _logger.LogWarning("Edición de maquinaria solicitada con ID inválido.");
-                return BadRequest("ID de maquinaria no válido.");
+                return NotFound();
             }
 
-            try
+            Maquinaria maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario);
+            if (maquinaria == null)
             {
-                var maquinaria = await _maquinariaService.ObtenerMaquinariaPorIdAsync(idInventario);
-                if (maquinaria == null)
-                {
-                    _logger.LogWarning($"Maquinaria con ID {idInventario} no encontrada para edición.");
-                    return NotFound($"Maquinaria con ID {idInventario} no encontrada.");
-                }
-
-                var maquinariaViewModel = new Maquinaria
-                {
-                    IdInventario = maquinaria.IdInventario,
-                    Descripcion = maquinaria.Descripcion,
-                    Tipo = maquinaria.Tipo,
-                    HorasUsoActuales = maquinaria.HorasUsoActuales,
-                    HorasUsoMaximoDia = maquinaria.HorasUsoMaximoDia,
-                    HorasUsoParaMantenimiento = maquinaria.HorasUsoParaMantenimiento
-                };
-
-                return View(maquinariaViewModel);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener la maquinaria con ID {idInventario} para edición.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener la maquinaria para edición." });
-            }
+            return View(maquinaria);
         }
 
-        // POST: Maquinaria/Edit/idInventario
+        // POST: Maquinaria/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int idInventario, Maquinaria maquinariaViewModel)
+        public IActionResult Edit(Maquinaria maquinaria)
         {
-            if (idInventario != maquinariaViewModel.IdInventario)
+            if (ModelState.IsValid)
             {
-                _logger.LogWarning($"ID de maquinaria no coincide en la edición: {idInventario} != {maquinariaViewModel.IdInventario}");
-                return BadRequest("ID de maquinaria no coincide.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(maquinariaViewModel);
-            }
-
-            try
-            {
-                var maquinaria = new Maquinaria
+                bool updated = _maquinariaService.ActualizarMaquinaria(maquinaria);
+                if (updated)
                 {
-                    IdInventario = maquinariaViewModel.IdInventario,
-                    Descripcion = maquinariaViewModel.Descripcion,
-                    Tipo = maquinariaViewModel.Tipo,
-                    HorasUsoActuales = maquinariaViewModel.HorasUsoActuales,
-                    HorasUsoMaximoDia = maquinariaViewModel.HorasUsoMaximoDia,
-                    HorasUsoParaMantenimiento = maquinariaViewModel.HorasUsoParaMantenimiento
-                };
-
-                var resultado = await _maquinariaService.ActualizarMaquinariaAsync(maquinaria);
-                if (resultado)
-                {
-                    _logger.LogInformation($"Maquinaria actualizada exitosamente con ID {maquinaria.IdInventario}.");
+                    TempData["SuccessMessage"] = "Maquinaria actualizada exitosamente.";
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
                     ModelState.AddModelError("", "No se pudo actualizar la maquinaria.");
-                    _logger.LogWarning($"No se pudo actualizar la maquinaria con ID {maquinaria.IdInventario}.");
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al actualizar la maquinaria con ID {idInventario}.");
-                ModelState.AddModelError("", "Ocurrió un error al actualizar la maquinaria.");
-            }
-
-            return View(maquinariaViewModel);
+            return View(maquinaria);
         }
 
         // GET: Maquinaria/Delete/idInventario
-        public async Task<IActionResult> Delete(int idInventario)
+        public IActionResult Delete(int idInventario)
         {
-            if (idInventario <= 0)
+            if (idInventario == 0)
             {
-                _logger.LogWarning("Eliminación de maquinaria solicitada con ID inválido.");
-                return BadRequest("ID de maquinaria no válido.");
+                return NotFound();
             }
 
-            try
+            Maquinaria maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario);
+            if (maquinaria == null)
             {
-                var maquinaria = await _maquinariaService.ObtenerMaquinariaPorIdAsync(idInventario);
-                if (maquinaria == null)
-                {
-                    _logger.LogWarning($"Maquinaria con ID {idInventario} no encontrada para eliminación.");
-                    return NotFound($"Maquinaria con ID {idInventario} no encontrada.");
-                }
+                return NotFound();
+            }
 
-                return View(maquinaria);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener la maquinaria con ID {idInventario} para eliminación.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener la maquinaria para eliminación." });
-            }
+            return View(maquinaria);
         }
 
-        // POST: Maquinaria/Delete/idInventario
+        // POST: Maquinaria/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int idInventario)
+        public IActionResult DeleteConfirmed(int idInventario)
         {
-            if (idInventario <= 0)
+            bool deleted = _maquinariaService.EliminarMaquinaria(idInventario);
+            if (deleted)
             {
-                _logger.LogWarning("Eliminación de maquinaria confirmada con ID inválido.");
-                return BadRequest("ID de maquinaria no válido.");
+                TempData["SuccessMessage"] = "Maquinaria eliminada exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
-
-            try
+            else
             {
-                var resultado = await _maquinariaService.EliminarMaquinariaAsync(idInventario);
-                if (resultado)
-                {
-                    _logger.LogInformation($"Maquinaria eliminada exitosamente con ID {idInventario}.");
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    _logger.LogWarning($"Maquinaria con ID {idInventario} no encontrada para eliminación.");
-                    return NotFound($"Maquinaria con ID {idInventario} no encontrada.");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al eliminar la maquinaria con ID {idInventario}.");
-                return View("Error", new ErrorViewModel { Message = "Error al eliminar la maquinaria." });
+                return NotFound();
             }
         }
     }
