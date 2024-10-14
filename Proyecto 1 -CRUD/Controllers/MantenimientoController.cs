@@ -7,12 +7,14 @@ namespace Proyecto_1__CRUD.Controllers
     public class MantenimientoController : Controller
     {
         private readonly IMantenimientoService _mantenimientoService;
+        private readonly IClienteService _clienteService;
         private readonly ILogger<MantenimientoController> _logger;
 
-        public MantenimientoController(IMantenimientoService mantenimientoService, ILogger<MantenimientoController> logger)
+        public MantenimientoController(IMantenimientoService mantenimientoService, ILogger<MantenimientoController> logger, IClienteService clienteService)
         {
             _mantenimientoService = mantenimientoService;
             _logger = logger;
+            _clienteService = clienteService;
         }
 
         // GET: Mantenimiento
@@ -36,6 +38,8 @@ namespace Proyecto_1__CRUD.Controllers
         // GET: Mantenimiento/Create
         public IActionResult Create()
         {
+            var clientes = _clienteService.ObtenerClientes();
+            ViewBag.Clientes = clientes; 
             return View();
         }
 
@@ -54,7 +58,14 @@ namespace Proyecto_1__CRUD.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Ya existe un mantenimiento con ese ID.");
+                    if (_mantenimientoService.ObtenerMantenimientoPorId(mantenimiento.IdMantenimiento) != null)
+                    {
+                        ModelState.AddModelError("", "Ya existe un mantenimiento con ese ID.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "El cliente ya tiene un mantenimiento registrado.");
+                    }
                 }
             }
             return View(mantenimiento);
@@ -69,6 +80,9 @@ namespace Proyecto_1__CRUD.Controllers
             }
 
             Mantenimiento mantenimiento = _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento);
+            var clientes = _clienteService.ObtenerClientes();
+            ViewBag.Clientes = clientes; 
+
             if (mantenimiento == null)
             {
                 return NotFound();
@@ -91,7 +105,14 @@ namespace Proyecto_1__CRUD.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "No se pudo actualizar el mantenimiento.");
+                    if (_mantenimientoService.ObtenerMantenimientoPorId(mantenimiento.IdMantenimiento) == null)
+                    {
+                        ModelState.AddModelError("", "No se encontró el mantenimiento.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "El cliente ya tiene otro mantenimiento registrado.");
+                    }
                 }
             }
             return View(mantenimiento);

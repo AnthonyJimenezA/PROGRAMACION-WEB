@@ -17,9 +17,21 @@
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="IdCliente" class="form-label"></label>
-                        <input asp-for="IdCliente" class="form-control" />
-                        <span asp-validation-for="IdCliente" class="text-danger"></span>
+                        <label asp-for="IdMantenimiento" class="form-label"></label>
+                        <input asp-for="IdMantenimiento" class="form-control" />
+                        <span asp-validation-for="IdMantenimiento" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="IdCliente">Cliente</label>
+                        <select id="IdCliente" name="IdCliente" class="form-control" required>
+                            <option value="">Seleccione un cliente</option>
+                            @foreach (var cliente in ViewBag.Clientes)
+                            {
+                                <option value="@cliente.Identificacion">@cliente.NombreCompleto</option>
+                            }
+                        </select>
                     </div>
 
                     <div class="form-group mb-3">
@@ -47,6 +59,16 @@
                     </div>
 
                     <div class="form-group mb-3">
+                        <label asp-for="PreferenciaFrecuencia" class="form-label"></label>
+                        <select asp-for="PreferenciaFrecuencia" class="form-control">
+                            <option value="">Seleccione Frecuencia</option>
+                            <option value="Quincenal">Quincenal</option>
+                            <option value="Mensual">Mensual</option>
+                        </select>
+                        <span asp-validation-for="PreferenciaFrecuencia" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
                         <label asp-for="TipoZacate" class="form-label"></label>
                         <select asp-for="TipoZacate" class="form-control">
                             <option value="">Seleccione Tipo de Zacate</option>
@@ -59,14 +81,13 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label>¿Se le ha aplicado algún producto?</label>
+                        <label asp-for="ProductoAplicado" class="form-label"></label>
                         <div class="form-check">
                             <input asp-for="ProductoAplicado" type="checkbox" class="form-check-input" id="productoAplicado" />
                             <label class="form-check-label" for="productoAplicado">Sí</label>
                         </div>
                         <span asp-validation-for="ProductoAplicado" class="text-danger"></span>
                     </div>
-
 
                     <div class="form-group mb-3">
                         <label asp-for="Producto" class="form-label"></label>

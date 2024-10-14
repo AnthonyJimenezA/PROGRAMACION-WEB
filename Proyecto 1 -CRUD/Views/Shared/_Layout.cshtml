@@ -12,7 +12,7 @@
     <script src="https://kit.fontawesome.com/bf19500a1f.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="wrapper">
+    <div class="container-fluid">
         <header>
             <nav class="navbar navbar-expand-sm navbar-light bg-light p-4">
                 <a class="navbar-brand" href="@Url.Action("Index", "Home")">Jardinería Hermanos Hernández</a>
@@ -35,14 +35,14 @@
                             <a class="nav-link" href="@Url.Action("Index", "Maquinaria")">Maquinaria</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Mantenimiento")">Maquinaria</a>
+                            <a class="nav-link" href="@Url.Action("Index", "Mantenimiento")">Mantenimiento</a>
                         </li>
                     </ul>
                 </div>
             </nav>
         </header>
 
-        <div class="container content-wrapper mt-4">
+        <div class="container mt-4">
             @RenderBody()
         </div>
 

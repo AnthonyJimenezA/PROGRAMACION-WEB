@@ -15,7 +15,7 @@
 }
 
 <div class="mb-3 d-flex justify-content-between">
-    <div class="col-3">
+    <div class="col-4">
         <form method="get" asp-action="Index" id="searchForm">
             <div class="input-group">
                 <input type="text" name="searchTerm" id="searchInput" class="form-control form-control-sm" placeholder="Buscar por ID de Mantenimiento" />
@@ -26,59 +26,35 @@
     <a asp-action="Create" class="btn btn-primary">Crear Nuevo</a>
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>ID de Mantenimiento</th>
-                <th>ID del Cliente</th>
-                <th>Fecha Ejecutada</th>
-                <th>Fecha Agendada</th>
-                <th>Cantidad de m² de la Propiedad</th>
-                <th>Cantidad de m² de Cerca Viva</th>
-                <th>Días sin Chapia</th>
-                <th>Fecha Siguiente Chapia</th>
-                <th>Tipo de Zacate</th>
-                <th>Producto Aplicado</th>
-                <th>Producto</th>
-                <th>Costo de Chapia por m²</th>
-                <th>Costo de Aplicación de Producto por m²</th>
-                <th>IVA (%)</th>
-                <th>Estado del Mantenimiento</th>
-                <th>Costo Total</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => item.IdMantenimiento)</td>
-                    <td>@Html.DisplayFor(modelItem => item.IdCliente)</td>
-                    <td>@Html.DisplayFor(modelItem => item.FechaEjecutado.ToString("d"))</td>
-                    <td>@Html.DisplayFor(modelItem => item.FechaAgendado.ToString("d"))</td>
-                    <td>@Html.DisplayFor(modelItem => item.M2Propiedad)</td>
-                    <td>@Html.DisplayFor(modelItem => item.M2CercaViva)</td>
-                    <td>@Html.DisplayFor(modelItem => item.DiasSinChapia)</td>
-                    <td>@Html.DisplayFor(modelItem => item.FechaSiguienteChapia.ToString("d"))</td>
-                    <td>@Html.DisplayFor(modelItem => item.TipoZacate)</td>
-                    <td>@Html.DisplayFor(modelItem => item.ProductoAplicado ? "Sí" : "No")</td>
-                    <td>@Html.DisplayFor(modelItem => item.Producto)</td>
-                    <td>@Html.DisplayFor(modelItem => item.CostoChapiaPorM2)</td>
-                    <td>@Html.DisplayFor(modelItem => item.CostoAplicacionProductoPorM2)</td>
-                    <td>@Html.DisplayFor(modelItem => item.IVA)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Estado)</td>
-                    <td>@Html.DisplayFor(modelItem => item.CostoTotal)</td>
-                    <td class="flex-cell">
-                        <a href="@Url.Action("Edit", new { idMantenimiento = item.IdMantenimiento })" class="icon-action" title="Editar">
-                            <i class="fas fa-edit fa-lg"></i>
-                        </a>
-                        <a href="@Url.Action("Delete", new { idMantenimiento = item.IdMantenimiento })" class="icon-action-delete" title="Eliminar">
-                            <i class="fas fa-trash-alt fa-lg"></i>
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Mantenimiento ID: @Html.DisplayFor(modelItem => item.IdMantenimiento)</h5>
+                    <p><strong>ID del Cliente:</strong> @Html.DisplayFor(modelItem => item.IdCliente)</p>
+                    <p><strong>Fecha Ejecutada:</strong> @item.FechaEjecutado.ToShortDateString()</p>
+                    <p><strong>Fecha Agendada:</strong> @item.FechaAgendado.ToShortDateString()</p>
+                    <p><strong>Cantidad de m² de la Propiedad:</strong> @Html.DisplayFor(modelItem => item.M2Propiedad)</p>
+                    <p><strong>Cantidad de m² de Cerca Viva:</strong> @Html.DisplayFor(modelItem => item.M2CercaViva)</p>
+                    <p><strong>Días sin Chapia:</strong> @Html.DisplayFor(modelItem => item.DiasSinChapia)</p>
+                    <p><strong>Fecha Siguiente Chapia:</strong> @item.FechaSiguienteChapia.ToShortDateString()</p>
+                    <p><strong>Tipo de Zacate:</strong> @Html.DisplayFor(modelItem => item.TipoZacate)</p>
+                    <p><strong>Producto Aplicado:</strong> @Html.DisplayFor(modelItem => item.ProductoAplicadoDisplay)</p>
+                    <p><strong>Producto:</strong> @Html.DisplayFor(modelItem => item.Producto)</p>
+                    <p><strong>Costo de Chapia por m²:</strong> @Html.DisplayFor(modelItem => item.CostoChapiaPorM2)</p>
+                    <p><strong>Costo de Aplicación de Producto por m²:</strong> @Html.DisplayFor(modelItem => item.CostoAplicacionProductoPorM2)</p>
+                    <p><strong>IVA (%):</strong> @Html.DisplayFor(modelItem => item.IVA)</p>
+                    <p><strong>Estado del Mantenimiento:</strong> @Html.DisplayFor(modelItem => item.Estado)</p>
+                    <p><strong>Costo Total:</strong> @Html.DisplayFor(modelItem => item.CostoTotal)</p>
+                    <div class="d-flex justify-content-end">
+                        <a href="@Url.Action("Edit", new { idMantenimiento = item.IdMantenimiento })" class="btn btn-sm btn-primary me-2">Editar</a>
+                        <a href="@Url.Action("Delete", new { idMantenimiento = item.IdMantenimiento })" class="btn btn-sm btn-danger">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>

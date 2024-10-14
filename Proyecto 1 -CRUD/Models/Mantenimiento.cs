@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Proyecto_1__CRUD.Models
 {
@@ -39,13 +40,26 @@ namespace Proyecto_1__CRUD.Models
         [Display(Name = "Fecha Siguiente Chapia")]
         public DateTime FechaSiguienteChapia { get; set; } // Autocalculado
 
+        [Required(ErrorMessage = "La preferencia de frecuencia es obligatoria.")]
+        [Display(Name = "Preferencia de Frecuencia")]
+        public string PreferenciaFrecuencia { get; set; } // "Quincenal" o "Mensual"
+
         [Required(ErrorMessage = "El tipo de zacate es obligatorio.")]
         [Display(Name = "Tipo de Zacate")]
         public string TipoZacate { get; set; } // "San Agustín", "Toro", "Dulce", "Otro"
 
         [Required(ErrorMessage = "Debe indicar si se ha aplicado algún producto.")]
-        [Display(Name = "Producto Aplicado")]
+        [Display(Name = "¿Se le ha aplicado algún producto?")]
         public bool ProductoAplicado { get; set; } // Sí o No
+
+        [Display(Name = "¿Producto Aplicado?")]
+        public string ProductoAplicadoDisplay
+        {
+            get
+            {
+                return ProductoAplicado ? "Sí" : "No";
+            }
+        }
 
         [Display(Name = "Producto Aplicado")]
         public string Producto { get; set; } // "Random", "Coyolillo", "Hoja Ancha", "Otro"
@@ -74,11 +88,11 @@ namespace Proyecto_1__CRUD.Models
         {
             get
             {
-                double costoTotal = (M2Propiedad * CostoChapiaPorM2) + (M2CercaViva * CostoChapiaPorM2);
+                double costoTotal = (M2Propiedad + M2CercaViva) * CostoChapiaPorM2;
 
                 if (ProductoAplicado && !string.IsNullOrEmpty(Producto))
                 {
-                    costoTotal += (M2Propiedad * CostoAplicacionProductoPorM2) + (M2CercaViva * CostoAplicacionProductoPorM2);
+                    costoTotal += (M2Propiedad + M2CercaViva) * CostoAplicacionProductoPorM2;
                 }
 
                 // Aplicar IVA
