@@ -6,8 +6,8 @@ namespace Proyecto_1__CRUD.Controllers
 {
     public class ClienteController : Controller
     {
-        private readonly IClienteService _clienteService;
-        private readonly ILogger<ClienteController> _logger;
+        private readonly IClienteService _clienteService; // Servicio para manejar la lógica de clientes
+        private readonly ILogger<ClienteController> _logger; // Logger para registrar errores
 
         public ClienteController(IClienteService clienteService, ILogger<ClienteController> logger)
         {
@@ -20,23 +20,24 @@ namespace Proyecto_1__CRUD.Controllers
         {
             try
             {
+                // Obtiene la lista de clientes, filtrando si hay un término de búsqueda
                 List<Cliente> clientes = string.IsNullOrEmpty(searchTerm)
                     ? _clienteService.ObtenerClientes()
                     : _clienteService.BuscarClientesPorCedula(searchTerm);
 
-                return View(clientes);
+                return View(clientes); // Retorna la vista con la lista de clientes
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener la lista de clientes.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de clientes." });
+                _logger.LogError(ex, "Error al obtener la lista de clientes."); // Registra el error
+                return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de clientes." }); // Retorna vista de error
             }
         }
 
         // GET: Cliente/Create
         public IActionResult Create()
         {
-            return View();
+            return View(); // Retorna la vista para crear un nuevo cliente
         }
 
         // POST: Cliente/Create
@@ -44,36 +45,38 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Cliente cliente)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
+                // Intenta agregar el nuevo cliente
                 bool added = _clienteService.AgregarCliente(cliente);
                 if (added)
                 {
-                    TempData["SuccessMessage"] = "Cliente creado exitosamente.";
-                    return RedirectToAction(nameof(Index));
+                    TempData["SuccessMessage"] = "Cliente creado exitosamente."; // Mensaje de éxito
+                    return RedirectToAction(nameof(Index)); // Redirige a la lista de clientes
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Ya existe un cliente con esa identificación.");
+                    ModelState.AddModelError("", "Ya existe un cliente con esa identificación."); // Mensaje de error
                 }
             }
-            return View(cliente);
+            return View(cliente); // Retorna la vista con errores
         }
 
         // GET: Cliente/Edit/identificacion
         public IActionResult Edit(string identificacion)
         {
-            if (identificacion == null)
+            if (identificacion == null) // Verifica si la identificación es nula
             {
-                return NotFound();
+                return NotFound(); // Retorna error 404
             }
 
+            // Obtiene el cliente por identificación
             Cliente cliente = _clienteService.ObtenerClientePorId(identificacion);
-            if (cliente == null)
+            if (cliente == null) // Verifica si el cliente no fue encontrado
             {
-                return NotFound();
+                return NotFound(); // Retorna error 404
             }
-            return View(cliente);
+            return View(cliente); // Retorna la vista para editar el cliente
         }
 
         // POST: Cliente/Edit
@@ -81,37 +84,39 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Cliente cliente)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
+                // Intenta actualizar el cliente
                 bool updated = _clienteService.ActualizarCliente(cliente);
                 if (updated)
                 {
-                    TempData["SuccessMessage"] = "Cliente actualizado exitosamente.";
-                    return RedirectToAction(nameof(Index));
+                    TempData["SuccessMessage"] = "Cliente actualizado exitosamente."; // Mensaje de éxito
+                    return RedirectToAction(nameof(Index)); // Redirige a la lista de clientes
                 }
                 else
                 {
-                    ModelState.AddModelError("", "No se pudo actualizar el cliente.");
+                    ModelState.AddModelError("", "No se pudo actualizar el cliente."); // Mensaje de error
                 }
             }
-            return View(cliente);
+            return View(cliente); // Retorna la vista con errores
         }
 
         // GET: Cliente/Delete/identificacion
         public IActionResult Delete(string identificacion)
         {
-            if (identificacion == null)
+            if (identificacion == null) // Verifica si la identificación es nula
             {
-                return NotFound();
+                return NotFound(); // Retorna error 404
             }
 
+            // Obtiene el cliente por identificación
             Cliente cliente = _clienteService.ObtenerClientePorId(identificacion);
-            if (cliente == null)
+            if (cliente == null) // Verifica si el cliente no fue encontrado
             {
-                return NotFound();
+                return NotFound(); // Retorna error 404
             }
 
-            return View(cliente);
+            return View(cliente); // Retorna vista de confirmación de eliminación
         }
 
         // POST: Cliente/DeleteConfirmed
@@ -119,15 +124,16 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(string identificacion)
         {
+            // Intenta eliminar el cliente
             bool deleted = _clienteService.EliminarCliente(identificacion);
             if (deleted)
             {
-                TempData["SuccessMessage"] = "Cliente eliminado exitosamente.";
-                return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "Cliente eliminado exitosamente."; // Mensaje de éxito
+                return RedirectToAction(nameof(Index)); // Redirige a la lista de clientes
             }
             else
             {
-                return NotFound();
+                return NotFound(); // Retorna error 404 si no se encuentra
             }
         }
     }

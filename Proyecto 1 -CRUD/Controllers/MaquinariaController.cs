@@ -6,8 +6,8 @@ namespace Proyecto_1__CRUD.Controllers
 {
     public class MaquinariaController : Controller
     {
-        private readonly IMaquinariaService _maquinariaService;
-        private readonly ILogger<MaquinariaController> _logger;
+        private readonly IMaquinariaService _maquinariaService; // Servicio para manejar la lógica de maquinaria
+        private readonly ILogger<MaquinariaController> _logger; // Logger para registrar errores
 
         public MaquinariaController(IMaquinariaService maquinariaService, ILogger<MaquinariaController> logger)
         {
@@ -20,60 +20,46 @@ namespace Proyecto_1__CRUD.Controllers
         {
             try
             {
-                List<Maquinaria> maquinarias = string.IsNullOrEmpty(searchTerm)
+                // Obtiene la lista de maquinarias, filtrando si hay un término de búsqueda
+                var maquinarias = string.IsNullOrEmpty(searchTerm)
                     ? _maquinariaService.ObtenerMaquinarias()
                     : _maquinariaService.BuscarMaquinariasPorId(searchTerm);
 
-                return View(maquinarias);
+                return View(maquinarias); // Retorna la vista con la lista de maquinarias
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener la lista de maquinarias.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de maquinarias." });
+                _logger.LogError(ex, "Error al obtener la lista de maquinarias."); // Registra el error
+                return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de maquinarias." }); // Retorna vista de error
             }
         }
 
         // GET: Maquinaria/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View(); // Retorna la vista para crear nueva maquinaria
 
         // POST: Maquinaria/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Maquinaria maquinaria)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
-                bool added = _maquinariaService.AgregarMaquinaria(maquinaria);
-                if (added)
+                // Intenta agregar la nueva maquinaria
+                if (_maquinariaService.AgregarMaquinaria(maquinaria))
                 {
-                    TempData["SuccessMessage"] = "Maquinaria creada exitosamente.";
-                    return RedirectToAction(nameof(Index));
+                    TempData["SuccessMessage"] = "Maquinaria creada exitosamente."; // Mensaje de éxito
+                    return RedirectToAction(nameof(Index)); // Redirige a la lista de maquinarias
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Ya existe una maquinaria con ese ID de inventario.");
-                }
+                ModelState.AddModelError("", "Ya existe una maquinaria con ese ID de inventario."); // Mensaje de error
             }
-            return View(maquinaria);
+            return View(maquinaria); // Retorna la vista con errores
         }
 
         // GET: Maquinaria/Edit/idInventario
         public IActionResult Edit(int idInventario)
         {
-            if (idInventario == 0)
-            {
-                return NotFound();
-            }
-
-            Maquinaria maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario);
-            if (maquinaria == null)
-            {
-                return NotFound();
-            }
-            return View(maquinaria);
+            var maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
+            return maquinaria == null ? NotFound() : View(maquinaria); // Retorna la vista para editar o error 404
         }
 
         // POST: Maquinaria/Edit
@@ -81,37 +67,24 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Maquinaria maquinaria)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
-                bool updated = _maquinariaService.ActualizarMaquinaria(maquinaria);
-                if (updated)
+                // Intenta actualizar la maquinaria
+                if (_maquinariaService.ActualizarMaquinaria(maquinaria))
                 {
-                    TempData["SuccessMessage"] = "Maquinaria actualizada exitosamente.";
-                    return RedirectToAction(nameof(Index));
+                    TempData["SuccessMessage"] = "Maquinaria actualizada exitosamente."; // Mensaje de éxito
+                    return RedirectToAction(nameof(Index)); // Redirige a la lista de maquinarias
                 }
-                else
-                {
-                    ModelState.AddModelError("", "No se pudo actualizar la maquinaria.");
-                }
+                ModelState.AddModelError("", "No se pudo actualizar la maquinaria."); // Mensaje de error
             }
-            return View(maquinaria);
+            return View(maquinaria); // Retorna la vista con errores
         }
 
         // GET: Maquinaria/Delete/idInventario
         public IActionResult Delete(int idInventario)
         {
-            if (idInventario == 0)
-            {
-                return NotFound();
-            }
-
-            Maquinaria maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario);
-            if (maquinaria == null)
-            {
-                return NotFound();
-            }
-
-            return View(maquinaria);
+            var maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
+            return maquinaria == null ? NotFound() : View(maquinaria); // Retorna vista de confirmación o error 404
         }
 
         // POST: Maquinaria/DeleteConfirmed
@@ -119,16 +92,13 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int idInventario)
         {
-            bool deleted = _maquinariaService.EliminarMaquinaria(idInventario);
-            if (deleted)
+            // Intenta eliminar la maquinaria
+            if (_maquinariaService.EliminarMaquinaria(idInventario))
             {
-                TempData["SuccessMessage"] = "Maquinaria eliminada exitosamente.";
-                return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "Maquinaria eliminada exitosamente."; // Mensaje de éxito
+                return RedirectToAction(nameof(Index)); // Redirige a la lista de maquinarias
             }
-            else
-            {
-                return NotFound();
-            }
+            return NotFound(); // Retorna error 404 si no se encuentra
         }
     }
 }

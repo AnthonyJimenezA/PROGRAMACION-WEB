@@ -6,9 +6,9 @@ namespace Proyecto_1__CRUD.Controllers
 {
     public class MantenimientoController : Controller
     {
-        private readonly IMantenimientoService _mantenimientoService;
-        private readonly IClienteService _clienteService;
-        private readonly ILogger<MantenimientoController> _logger;
+        private readonly IMantenimientoService _mantenimientoService; // Servicio para manejar la lógica de mantenimiento
+        private readonly IClienteService _clienteService; // Servicio para manejar la lógica de clientes
+        private readonly ILogger<MantenimientoController> _logger; // Logger para registrar errores
 
         public MantenimientoController(IMantenimientoService mantenimientoService, ILogger<MantenimientoController> logger, IClienteService clienteService)
         {
@@ -22,25 +22,25 @@ namespace Proyecto_1__CRUD.Controllers
         {
             try
             {
-                List<Mantenimiento> mantenimientos = string.IsNullOrEmpty(searchTerm)
+                // Obtiene la lista de mantenimientos, filtrando si hay un término de búsqueda
+                var mantenimientos = string.IsNullOrEmpty(searchTerm)
                     ? _mantenimientoService.ObtenerMantenimientos()
                     : _mantenimientoService.BuscarMantenimientosPorId(searchTerm);
 
-                return View(mantenimientos);
+                return View(mantenimientos); // Retorna la vista con la lista de mantenimientos
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener la lista de mantenimientos.");
-                return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de mantenimientos." });
+                _logger.LogError(ex, "Error al obtener la lista de mantenimientos."); // Registra el error
+                return View("Error", new ErrorViewModel { Message = "Error al obtener la lista de mantenimientos." }); // Retorna vista de error
             }
         }
 
         // GET: Mantenimiento/Create
         public IActionResult Create()
         {
-            var clientes = _clienteService.ObtenerClientes();
-            ViewBag.Clientes = clientes; 
-            return View();
+            ViewBag.Clientes = _clienteService.ObtenerClientes(); // Carga la lista de clientes para el dropdown
+            return View(); // Retorna la vista para crear nuevo mantenimiento
         }
 
         // POST: Mantenimiento/Create
@@ -48,46 +48,42 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Mantenimiento mantenimiento)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
-                bool added = _mantenimientoService.AgregarMantenimiento(mantenimiento);
-                if (added)
+                // Intenta agregar el nuevo mantenimiento
+                if (_mantenimientoService.AgregarMantenimiento(mantenimiento))
                 {
-                    TempData["SuccessMessage"] = "Mantenimiento creado exitosamente.";
-                    return RedirectToAction(nameof(Index));
+                    TempData["SuccessMessage"] = "Mantenimiento creado exitosamente."; // Mensaje de éxito
+                    return RedirectToAction(nameof(Index)); // Redirige a la lista de mantenimientos
                 }
-                else
-                {
-                    if (_mantenimientoService.ObtenerMantenimientoPorId(mantenimiento.IdMantenimiento) != null)
-                    {
-                        ModelState.AddModelError("", "Ya existe un mantenimiento con ese ID.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "El cliente ya tiene un mantenimiento registrado.");
-                    }
-                }
+                HandleMantenimientoCreationError(mantenimiento); // Maneja errores específicos al crear mantenimiento
             }
-            return View(mantenimiento);
+            return View(mantenimiento); // Retorna la vista con errores
+        }
+
+        private void HandleMantenimientoCreationError(Mantenimiento mantenimiento)
+        {
+            // Maneja errores específicos si el mantenimiento ya existe o el cliente tiene otro mantenimiento
+            if (_mantenimientoService.ObtenerMantenimientoPorId(mantenimiento.IdMantenimiento) != null)
+            {
+                ModelState.AddModelError("", "Ya existe un mantenimiento con ese ID."); // Mensaje de error
+            }
+            else
+            {
+                ModelState.AddModelError("", "El cliente ya tiene un mantenimiento registrado."); // Mensaje de error
+            }
         }
 
         // GET: Mantenimiento/Edit/idMantenimiento
         public IActionResult Edit(int idMantenimiento)
         {
-            if (idMantenimiento == 0)
-            {
-                return NotFound();
-            }
-
-            Mantenimiento mantenimiento = _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento);
-            var clientes = _clienteService.ObtenerClientes();
-            ViewBag.Clientes = clientes; 
-
+            var mantenimiento = _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento); // Obtiene el mantenimiento por ID
             if (mantenimiento == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna error 404 si no se encuentra
             }
-            return View(mantenimiento);
+            ViewBag.Clientes = _clienteService.ObtenerClientes(); // Carga la lista de clientes para el dropdown
+            return View(mantenimiento); // Retorna la vista para editar
         }
 
         // POST: Mantenimiento/Edit
@@ -95,44 +91,37 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Mantenimiento mantenimiento)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
-                bool updated = _mantenimientoService.ActualizarMantenimiento(mantenimiento);
-                if (updated)
+                // Intenta actualizar el mantenimiento
+                if (_mantenimientoService.ActualizarMantenimiento(mantenimiento))
                 {
-                    TempData["SuccessMessage"] = "Mantenimiento actualizado exitosamente.";
-                    return RedirectToAction(nameof(Index));
+                    TempData["SuccessMessage"] = "Mantenimiento actualizado exitosamente."; // Mensaje de éxito
+                    return RedirectToAction(nameof(Index)); // Redirige a la lista de mantenimientos
                 }
-                else
-                {
-                    if (_mantenimientoService.ObtenerMantenimientoPorId(mantenimiento.IdMantenimiento) == null)
-                    {
-                        ModelState.AddModelError("", "No se encontró el mantenimiento.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "El cliente ya tiene otro mantenimiento registrado.");
-                    }
-                }
+                HandleMantenimientoUpdateError(mantenimiento); // Maneja errores específicos al actualizar mantenimiento
             }
-            return View(mantenimiento);
+            return View(mantenimiento); // Retorna la vista con errores
+        }
+
+        private void HandleMantenimientoUpdateError(Mantenimiento mantenimiento)
+        {
+            // Maneja errores específicos si no se encuentra el mantenimiento o el cliente tiene otro mantenimiento
+            if (_mantenimientoService.ObtenerMantenimientoPorId(mantenimiento.IdMantenimiento) == null)
+            {
+                ModelState.AddModelError("", "No se encontró el mantenimiento."); // Mensaje de error
+            }
+            else
+            {
+                ModelState.AddModelError("", "El cliente ya tiene otro mantenimiento registrado."); // Mensaje de error
+            }
         }
 
         // GET: Mantenimiento/Delete/idMantenimiento
         public IActionResult Delete(int idMantenimiento)
         {
-            if (idMantenimiento == 0)
-            {
-                return NotFound();
-            }
-
-            Mantenimiento mantenimiento = _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento);
-            if (mantenimiento == null)
-            {
-                return NotFound();
-            }
-
-            return View(mantenimiento);
+            var mantenimiento = _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento); // Obtiene el mantenimiento por ID
+            return mantenimiento == null ? NotFound() : View(mantenimiento); // Retorna vista de confirmación o error 404
         }
 
         // POST: Mantenimiento/DeleteConfirmed
@@ -140,16 +129,13 @@ namespace Proyecto_1__CRUD.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int idMantenimiento)
         {
-            bool deleted = _mantenimientoService.EliminarMantenimiento(idMantenimiento);
-            if (deleted)
+            // Intenta eliminar el mantenimiento
+            if (_mantenimientoService.EliminarMantenimiento(idMantenimiento))
             {
-                TempData["SuccessMessage"] = "Mantenimiento eliminado exitosamente.";
-                return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "Mantenimiento eliminado exitosamente."; // Mensaje de éxito
+                return RedirectToAction(nameof(Index)); // Redirige a la lista de mantenimientos
             }
-            else
-            {
-                return NotFound();
-            }
+            return NotFound(); // Retorna error 404 si no se encuentra
         }
     }
 }

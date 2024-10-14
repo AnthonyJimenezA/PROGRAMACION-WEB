@@ -1,6 +1,4 @@
 ﻿using Proyecto_1__CRUD.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Proyecto_1__CRUD.Services
 {
