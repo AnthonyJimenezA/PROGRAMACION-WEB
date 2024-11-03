@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proyecto 1 -CRUD", "Proyecto 1 -CRUD\Proyecto 1 -CRUD.csproj", "{0336FBF1-AF21-43FE-B0F1-3588F5E26D4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JARDINERIA WEB API", "Proyecto 1 -CRUD\JARDINERIA WEB API.csproj", "{0336FBF1-AF21-43FE-B0F1-3588F5E26D4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JARDINERIA WEB UI", "Proyecto API -CRUD\JARDINERIA WEB UI.csproj", "{D7FAD26C-F1DF-47AA-A9B6-54F5264C7718}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{0336FBF1-AF21-43FE-B0F1-3588F5E26D4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0336FBF1-AF21-43FE-B0F1-3588F5E26D4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0336FBF1-AF21-43FE-B0F1-3588F5E26D4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7FAD26C-F1DF-47AA-A9B6-54F5264C7718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7FAD26C-F1DF-47AA-A9B6-54F5264C7718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7FAD26C-F1DF-47AA-A9B6-54F5264C7718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7FAD26C-F1DF-47AA-A9B6-54F5264C7718}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
