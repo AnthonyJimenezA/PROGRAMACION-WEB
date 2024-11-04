@@ -4,11 +4,11 @@ namespace Proyecto_1__CRUD.Services
 {
     public interface IClienteService
     {
-        List<Cliente> ObtenerClientes();
-        Cliente ObtenerClientePorId(string identificacion);
-        bool AgregarCliente(Cliente cliente);
-        bool ActualizarCliente(Cliente cliente);
-        bool EliminarCliente(string identificacion);
-        List<Cliente> BuscarClientesPorCedula(string searchTerm);
+        Task<List<Cliente>> ObtenerClientes(); 
+        Task<Cliente> ObtenerClientePorId(string identificacion); 
+        Task<bool> AgregarCliente(Cliente cliente); 
+        Task<bool> ActualizarCliente(Cliente cliente); 
+        Task<bool> EliminarCliente(string identificacion); 
+        Task<List<Cliente>> BuscarClientesPorCedula(string searchTerm); 
     }
 }

@@ -6,7 +6,7 @@ using Proyecto_API__CRUD.Models;
 
 namespace Proyecto_API__CRUD.Controllers
 {
-    [Route("api/[Empleado]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class EmpleadoController : ControllerBase
     {
@@ -34,7 +34,7 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Empleado/{id}
         [HttpGet("{id}")]
-        public ActionResult<Empleado> Get(int id)
+        public ActionResult<Empleado> Get(string id)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace Proyecto_API__CRUD.Controllers
 
         // DELETE api/Empleado/{id}
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
             try
             {

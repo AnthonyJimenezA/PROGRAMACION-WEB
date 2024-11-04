@@ -6,7 +6,7 @@ using Proyecto_API__CRUD.Models;
 
 namespace Proyecto_API__CRUD.Controllers
 {
-    [Route("api/[Cliente]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ClienteController : ControllerBase
     {
@@ -39,7 +39,7 @@ namespace Proyecto_API__CRUD.Controllers
         {
             try
             {
-                var cliente = _memory.ObtenerClientePorId(int.Parse(identificacion));
+                var cliente = _memory.ObtenerClientePorId(identificacion);
                 if (cliente == null)
                 {
                     return NotFound(new { Message = "Cliente no encontrado." });
@@ -99,7 +99,7 @@ namespace Proyecto_API__CRUD.Controllers
         {
             try
             {
-                if (_memory.EliminarCliente(int.Parse(identificacion)))
+                if (_memory.EliminarCliente(identificacion))
                 {
                     return NoContent();
                 }

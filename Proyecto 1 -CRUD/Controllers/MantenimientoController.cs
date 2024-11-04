@@ -18,14 +18,14 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Mantenimiento
-        public IActionResult Index(string searchTerm = null)
+        public async Task<IActionResult> Index(string searchTerm = null)
         {
             try
             {
                 // Obtiene la lista de mantenimientos, filtrando si hay un término de búsqueda
                 var mantenimientos = string.IsNullOrEmpty(searchTerm)
-                    ? _mantenimientoService.ObtenerMantenimientos()
-                    : _mantenimientoService.BuscarMantenimientosPorId(searchTerm);
+                    ? await _mantenimientoService.ObtenerMantenimientos()
+                    : await _mantenimientoService.BuscarMantenimientosPorId(searchTerm);
 
                 return View(mantenimientos); // Retorna la vista con la lista de mantenimientos
             }
@@ -37,27 +37,28 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Mantenimiento/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Clientes = _clienteService.ObtenerClientes(); // Carga la lista de clientes para el dropdown
+            ViewBag.Clientes = await _clienteService.ObtenerClientes(); // Carga la lista de clientes para el dropdown
             return View(); // Retorna la vista para crear nuevo mantenimiento
         }
 
         // POST: Mantenimiento/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Mantenimiento mantenimiento)
+        public async Task<IActionResult> Create(Mantenimiento mantenimiento)
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
                 // Intenta agregar el nuevo mantenimiento
-                if (_mantenimientoService.AgregarMantenimiento(mantenimiento))
+                if (await _mantenimientoService.AgregarMantenimiento(mantenimiento))
                 {
                     TempData["SuccessMessage"] = "Mantenimiento creado exitosamente."; // Mensaje de éxito
                     return RedirectToAction(nameof(Index)); // Redirige a la lista de mantenimientos
                 }
                 HandleMantenimientoCreationError(mantenimiento); // Maneja errores específicos al crear mantenimiento
             }
+            ViewBag.Clientes = await _clienteService.ObtenerClientes(); // Recarga la lista de clientes en caso de error
             return View(mantenimiento); // Retorna la vista con errores
         }
 
@@ -75,32 +76,33 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Mantenimiento/Edit/idMantenimiento
-        public IActionResult Edit(int idMantenimiento)
+        public async Task<IActionResult> Edit(int idMantenimiento)
         {
-            var mantenimiento = _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento); // Obtiene el mantenimiento por ID
+            var mantenimiento = await _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento); // Obtiene el mantenimiento por ID
             if (mantenimiento == null)
             {
                 return NotFound(); // Retorna error 404 si no se encuentra
             }
-            ViewBag.Clientes = _clienteService.ObtenerClientes(); // Carga la lista de clientes para el dropdown
+            ViewBag.Clientes = await _clienteService.ObtenerClientes(); // Carga la lista de clientes para el dropdown
             return View(mantenimiento); // Retorna la vista para editar
         }
 
         // POST: Mantenimiento/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Mantenimiento mantenimiento)
+        public async Task<IActionResult> Edit(Mantenimiento mantenimiento)
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
                 // Intenta actualizar el mantenimiento
-                if (_mantenimientoService.ActualizarMantenimiento(mantenimiento))
+                if (await _mantenimientoService.ActualizarMantenimiento(mantenimiento))
                 {
                     TempData["SuccessMessage"] = "Mantenimiento actualizado exitosamente."; // Mensaje de éxito
                     return RedirectToAction(nameof(Index)); // Redirige a la lista de mantenimientos
                 }
                 HandleMantenimientoUpdateError(mantenimiento); // Maneja errores específicos al actualizar mantenimiento
             }
+            ViewBag.Clientes = await _clienteService.ObtenerClientes(); // Recarga la lista de clientes en caso de error
             return View(mantenimiento); // Retorna la vista con errores
         }
 
@@ -118,19 +120,19 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Mantenimiento/Delete/idMantenimiento
-        public IActionResult Delete(int idMantenimiento)
+        public async Task<IActionResult> Delete(int idMantenimiento)
         {
-            var mantenimiento = _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento); // Obtiene el mantenimiento por ID
+            var mantenimiento = await _mantenimientoService.ObtenerMantenimientoPorId(idMantenimiento); // Obtiene el mantenimiento por ID
             return mantenimiento == null ? NotFound() : View(mantenimiento); // Retorna vista de confirmación o error 404
         }
 
         // POST: Mantenimiento/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int idMantenimiento)
+        public async Task<IActionResult> DeleteConfirmed(int idMantenimiento)
         {
             // Intenta eliminar el mantenimiento
-            if (_mantenimientoService.EliminarMantenimiento(idMantenimiento))
+            if (await _mantenimientoService.EliminarMantenimiento(idMantenimiento))
             {
                 TempData["SuccessMessage"] = "Mantenimiento eliminado exitosamente."; // Mensaje de éxito
                 return RedirectToAction(nameof(Index)); // Redirige a la lista de mantenimientos

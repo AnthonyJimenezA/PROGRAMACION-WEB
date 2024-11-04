@@ -17,7 +17,7 @@ namespace Proyecto_API__CRUD.Data
         // Métodos CRUD para la entidad Cliente
         public List<Cliente> ObtenerClientes() => _clientesCache.Select(c => (Cliente)c.Value).ToList();
 
-        public Cliente ObtenerClientePorId(int id) => _clientesCache.Get(id.ToString()) as Cliente;
+        public Cliente ObtenerClientePorId(string id) => _clientesCache.Get(id) as Cliente;
 
         public bool AgregarCliente(Cliente cliente)
         {
@@ -33,7 +33,7 @@ namespace Proyecto_API__CRUD.Data
             return true;
         }
 
-        public bool EliminarCliente(int id)
+        public bool EliminarCliente(string id)
         {
             return _clientesCache.Remove(id.ToString()) != null;
         }
@@ -41,7 +41,7 @@ namespace Proyecto_API__CRUD.Data
         // Métodos CRUD para la entidad Empleado
         public List<Empleado> ObtenerEmpleados() => _empleadosCache.Select(e => (Empleado)e.Value).ToList();
 
-        public Empleado ObtenerEmpleadoPorId(int id) => _empleadosCache.Get(id.ToString()) as Empleado;
+        public Empleado ObtenerEmpleadoPorId(string id) => _empleadosCache.Get(id) as Empleado;
 
         public bool AgregarEmpleado(Empleado empleado)
         {
@@ -57,15 +57,15 @@ namespace Proyecto_API__CRUD.Data
             return true;
         }
 
-        public bool EliminarEmpleado(int id)
+        public bool EliminarEmpleado(string id)
         {
-            return _empleadosCache.Remove(id.ToString()) != null;
+            return _empleadosCache.Remove(id) != null;
         }
 
         // Métodos CRUD para la entidad Mantenimiento
         public List<Mantenimiento> ObtenerMantenimientos() => _mantenimientosCache.Select(m => (Mantenimiento)m.Value).ToList();
 
-        public Mantenimiento ObtenerMantenimientoPorId(int id) => _mantenimientosCache.Get(id.ToString()) as Mantenimiento;
+        public Mantenimiento ObtenerMantenimientoPorId(string id) => _mantenimientosCache.Get(id) as Mantenimiento;
 
         public bool AgregarMantenimiento(Mantenimiento mantenimiento)
         {
@@ -81,15 +81,15 @@ namespace Proyecto_API__CRUD.Data
             return true;
         }
 
-        public bool EliminarMantenimiento(int id)
+        public bool EliminarMantenimiento(string id)
         {
-            return _mantenimientosCache.Remove(id.ToString()) != null;
+            return _mantenimientosCache.Remove(id) != null;
         }
 
         // Métodos CRUD para la entidad Maquinaria
         public List<Maquinaria> ObtenerMaquinarias() => _maquinariasCache.Select(m => (Maquinaria)m.Value).ToList();
 
-        public Maquinaria ObtenerMaquinariaPorId(int id) => _maquinariasCache.Get(id.ToString()) as Maquinaria;
+        public Maquinaria ObtenerMaquinariaPorId(string id) => _maquinariasCache.Get(id) as Maquinaria;
 
         public bool AgregarMaquinaria(Maquinaria maquinaria)
         {
@@ -105,9 +105,9 @@ namespace Proyecto_API__CRUD.Data
             return true;
         }
 
-        public bool EliminarMaquinaria(int id)
+        public bool EliminarMaquinaria(string id)
         {
-            return _maquinariasCache.Remove(id.ToString()) != null;
+            return _maquinariasCache.Remove(id) != null;
         }
     }
 }

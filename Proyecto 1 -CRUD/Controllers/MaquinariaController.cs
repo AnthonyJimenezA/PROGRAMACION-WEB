@@ -16,14 +16,14 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Maquinaria
-        public IActionResult Index(string searchTerm = null)
+        public async Task<IActionResult> Index(string searchTerm = null)
         {
             try
             {
                 // Obtiene la lista de maquinarias, filtrando si hay un término de búsqueda
-                var maquinarias = string.IsNullOrEmpty(searchTerm)
-                    ? _maquinariaService.ObtenerMaquinarias()
-                    : _maquinariaService.BuscarMaquinariasPorId(searchTerm);
+                List<Maquinaria> maquinarias = string.IsNullOrEmpty(searchTerm)
+                    ? await _maquinariaService.ObtenerMaquinarias()
+                    : await _maquinariaService.BuscarMaquinariasPorId(searchTerm);
 
                 return View(maquinarias); // Retorna la vista con la lista de maquinarias
             }
@@ -35,17 +35,21 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Maquinaria/Create
-        public IActionResult Create() => View(); // Retorna la vista para crear nueva maquinaria
+        public IActionResult Create()
+        {
+            return View(); // Retorna la vista para crear nueva maquinaria
+        }
 
         // POST: Maquinaria/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Maquinaria maquinaria)
+        public async Task<IActionResult> Create(Maquinaria maquinaria)
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
                 // Intenta agregar la nueva maquinaria
-                if (_maquinariaService.AgregarMaquinaria(maquinaria))
+                bool added = await _maquinariaService.AgregarMaquinaria(maquinaria);
+                if (added)
                 {
                     TempData["SuccessMessage"] = "Maquinaria creada exitosamente."; // Mensaje de éxito
                     return RedirectToAction(nameof(Index)); // Redirige a la lista de maquinarias
@@ -56,21 +60,22 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Maquinaria/Edit/idInventario
-        public IActionResult Edit(int idInventario)
+        public async Task<IActionResult> Edit(int idInventario)
         {
-            var maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
+            var maquinaria = await _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
             return maquinaria == null ? NotFound() : View(maquinaria); // Retorna la vista para editar o error 404
         }
 
         // POST: Maquinaria/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Maquinaria maquinaria)
+        public async Task<IActionResult> Edit(Maquinaria maquinaria)
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
                 // Intenta actualizar la maquinaria
-                if (_maquinariaService.ActualizarMaquinaria(maquinaria))
+                bool updated = await _maquinariaService.ActualizarMaquinaria(maquinaria);
+                if (updated)
                 {
                     TempData["SuccessMessage"] = "Maquinaria actualizada exitosamente."; // Mensaje de éxito
                     return RedirectToAction(nameof(Index)); // Redirige a la lista de maquinarias
@@ -81,19 +86,20 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Maquinaria/Delete/idInventario
-        public IActionResult Delete(int idInventario)
+        public async Task<IActionResult> Delete(int idInventario)
         {
-            var maquinaria = _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
+            var maquinaria = await _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
             return maquinaria == null ? NotFound() : View(maquinaria); // Retorna vista de confirmación o error 404
         }
 
         // POST: Maquinaria/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int idInventario)
+        public async Task<IActionResult> DeleteConfirmed(int idInventario)
         {
             // Intenta eliminar la maquinaria
-            if (_maquinariaService.EliminarMaquinaria(idInventario))
+            bool deleted = await _maquinariaService.EliminarMaquinaria(idInventario);
+            if (deleted)
             {
                 TempData["SuccessMessage"] = "Maquinaria eliminada exitosamente."; // Mensaje de éxito
                 return RedirectToAction(nameof(Index)); // Redirige a la lista de maquinarias

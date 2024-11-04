@@ -16,14 +16,14 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Empleado
-        public IActionResult Index(string searchTerm = null)
+        public async Task<IActionResult> Index(string searchTerm = null)
         {
             try
             {
                 // Obtiene la lista de empleados, filtrando si hay un término de búsqueda
-                var empleados = string.IsNullOrEmpty(searchTerm)
-                    ? _empleadoService.ObtenerEmpleados()
-                    : _empleadoService.BuscarEmpleadosPorCedula(searchTerm);
+                List<Empleado> empleados = string.IsNullOrEmpty(searchTerm)
+                    ? await _empleadoService.ObtenerEmpleados()
+                    : await _empleadoService.BuscarEmpleadosPorCedula(searchTerm);
 
                 return View(empleados); // Retorna la vista con la lista de empleados
             }
@@ -35,70 +35,106 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Empleado/Create
-        public IActionResult Create() => View(); // Retorna la vista para crear nuevo empleado
+        public IActionResult Create()
+        {
+            return View(); // Retorna la vista para crear nuevo empleado
+        }
 
         // POST: Empleado/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Empleado empleado)
+        public async Task<IActionResult> Create(Empleado empleado)
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
                 // Intenta agregar el nuevo empleado
-                if (_empleadoService.AgregarEmpleado(empleado))
+                bool added = await _empleadoService.AgregarEmpleado(empleado);
+                if (added)
                 {
                     TempData["SuccessMessage"] = "Empleado creado exitosamente."; // Mensaje de éxito
                     return RedirectToAction(nameof(Index)); // Redirige a la lista de empleados
                 }
-                ModelState.AddModelError("", "Ya existe un empleado con esa cédula."); // Mensaje de error
+                else
+                {
+                    ModelState.AddModelError("", "Ya existe un empleado con esa cédula."); // Mensaje de error
+                }
             }
             return View(empleado); // Retorna la vista con errores
         }
 
         // GET: Empleado/Edit/cedula
-        public IActionResult Edit(string cedula)
+        public async Task<IActionResult> Edit(string cedula)
         {
-            var empleado = _empleadoService.ObtenerEmpleadoPorCedula(cedula); // Obtiene el empleado por cédula
-            return empleado == null ? NotFound() : View(empleado); // Retorna la vista para editar o error 404
+            if (string.IsNullOrEmpty(cedula)) // Verifica si la cédula es nula
+            {
+                return NotFound(); // Retorna error 404
+            }
+
+            // Obtiene el empleado por cédula
+            Empleado empleado = await _empleadoService.ObtenerEmpleadoPorCedula(cedula);
+            if (empleado == null) // Verifica si el empleado no fue encontrado
+            {
+                return NotFound(); // Retorna error 404
+            }
+            return View(empleado); // Retorna la vista para editar el empleado
         }
 
         // POST: Empleado/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Empleado empleado)
+        public async Task<IActionResult> Edit(Empleado empleado)
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
                 // Intenta actualizar el empleado
-                if (_empleadoService.ActualizarEmpleado(empleado))
+                bool updated = await _empleadoService.ActualizarEmpleado(empleado);
+                if (updated)
                 {
                     TempData["SuccessMessage"] = "Empleado actualizado exitosamente."; // Mensaje de éxito
                     return RedirectToAction(nameof(Index)); // Redirige a la lista de empleados
                 }
-                ModelState.AddModelError("", "No se pudo actualizar el empleado."); // Mensaje de error
+                else
+                {
+                    ModelState.AddModelError("", "No se pudo actualizar el empleado."); // Mensaje de error
+                }
             }
             return View(empleado); // Retorna la vista con errores
         }
 
         // GET: Empleado/Delete/cedula
-        public IActionResult Delete(string cedula)
+        public async Task<IActionResult> Delete(string cedula)
         {
-            var empleado = _empleadoService.ObtenerEmpleadoPorCedula(cedula); // Obtiene el empleado por cédula
-            return empleado == null ? NotFound() : View(empleado); // Retorna vista de confirmación o error 404
+            if (string.IsNullOrEmpty(cedula)) // Verifica si la cédula es nula
+            {
+                return NotFound(); // Retorna error 404
+            }
+
+            // Obtiene el empleado por cédula
+            Empleado empleado = await _empleadoService.ObtenerEmpleadoPorCedula(cedula);
+            if (empleado == null) // Verifica si el empleado no fue encontrado
+            {
+                return NotFound(); // Retorna error 404
+            }
+
+            return View(empleado); // Retorna vista de confirmación de eliminación
         }
 
         // POST: Empleado/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(string cedula)
+        public async Task<IActionResult> DeleteConfirmed(string cedula)
         {
             // Intenta eliminar el empleado
-            if (_empleadoService.EliminarEmpleado(cedula))
+            bool deleted = await _empleadoService.EliminarEmpleado(cedula);
+            if (deleted)
             {
                 TempData["SuccessMessage"] = "Empleado eliminado exitosamente."; // Mensaje de éxito
                 return RedirectToAction(nameof(Index)); // Redirige a la lista de empleados
             }
-            return NotFound(); // Retorna error 404 si no se encuentra
+            else
+            {
+                return NotFound(); // Retorna error 404 si no se encuentra
+            }
         }
     }
 }

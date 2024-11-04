@@ -1,74 +1,72 @@
-﻿using Proyecto_1__CRUD.Models;
+﻿using Newtonsoft.Json;
+using Proyecto_1__CRUD.Models;
+using System.Text;
 
 namespace Proyecto_1__CRUD.Services
 {
     public class MaquinariaService : IMaquinariaService
     {
-        // Lista estática para mantener la persistencia de la maquinaria
-        private static readonly List<Maquinaria> _maquinarias = new List<Maquinaria>();
+        private readonly HttpClient _httpClient;
 
-        // Retorna la lista completa de maquinarias
-        public List<Maquinaria> ObtenerMaquinarias()
+        public MaquinariaService(HttpClient httpClient)
         {
-            return _maquinarias;
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri("http://localhost:5191/"); // Cambia esto por la URL de tu API
         }
 
-        // Busca y retorna una maquinaria por su ID
-        public Maquinaria ObtenerMaquinariaPorId(int idInventario)
+        public async Task<List<Maquinaria>> ObtenerMaquinarias()
         {
-            return _maquinarias.FirstOrDefault(m => m.IdInventario == idInventario);
-        }
-
-        // Agrega una nueva maquinaria si no existe ya en la lista
-        public bool AgregarMaquinaria(Maquinaria maquinaria)
-        {
-            if (_maquinarias.Any(m => m.IdInventario == maquinaria.IdInventario))
+            var response = await _httpClient.GetAsync("api/Maquinaria");
+            if (response.IsSuccessStatusCode)
             {
-                return false; // No se puede agregar si ya existe
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Maquinaria>>(json);
             }
-
-            _maquinarias.Add(maquinaria); // Agregar maquinaria a la lista
-            return true; // Indica que se agregó correctamente
+            return new List<Maquinaria>(); // Retorna una lista vacía si no hay éxito
         }
 
-        // Actualiza los detalles de una maquinaria existente
-        public bool ActualizarMaquinaria(Maquinaria maquinaria)
+        public async Task<Maquinaria> ObtenerMaquinariaPorId(int idInventario)
         {
-            var maquinariaExistente = _maquinarias.FirstOrDefault(m => m.IdInventario == maquinaria.IdInventario);
-            if (maquinariaExistente == null)
+            var response = await _httpClient.GetAsync($"api/Maquinaria/{idInventario}");
+            if (response.IsSuccessStatusCode)
             {
-                return false; // No se encontró la maquinaria
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Maquinaria>(json);
             }
-
-            // Actualizar los campos de la maquinaria
-            maquinariaExistente.Descripcion = maquinaria.Descripcion;
-            maquinariaExistente.Tipo = maquinaria.Tipo;
-            maquinariaExistente.HorasUsoActuales = maquinaria.HorasUsoActuales;
-            maquinariaExistente.HorasUsoMaximoDia = maquinaria.HorasUsoMaximoDia;
-            maquinariaExistente.HorasUsoParaMantenimiento = maquinaria.HorasUsoParaMantenimiento;
-
-            return true; // Indica que se actualizó correctamente
+            return null; // Retorna null si no se encuentra la maquinaria
         }
 
-        // Elimina una maquinaria de la lista por su ID
-        public bool EliminarMaquinaria(int idInventario)
+        public async Task<bool> AgregarMaquinaria(Maquinaria maquinaria)
         {
-            var maquinaria = _maquinarias.FirstOrDefault(m => m.IdInventario == idInventario);
-            if (maquinaria == null)
+            var json = JsonConvert.SerializeObject(maquinaria);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("api/Maquinaria", content);
+            return response.IsSuccessStatusCode; // Retorna true si se agregó correctamente
+        }
+
+        public async Task<bool> ActualizarMaquinaria(Maquinaria maquinaria)
+        {
+            var json = JsonConvert.SerializeObject(maquinaria);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"api/Maquinaria/{maquinaria.IdInventario}", content);
+            return response.IsSuccessStatusCode; // Retorna true si se actualizó correctamente
+        }
+
+        public async Task<bool> EliminarMaquinaria(int idInventario)
+        {
+            var response = await _httpClient.DeleteAsync($"api/Maquinaria/{idInventario}");
+            return response.IsSuccessStatusCode; // Retorna true si se eliminó correctamente
+        }
+
+        public async Task<List<Maquinaria>> BuscarMaquinariasPorId(string searchTerm)
+        {
+            var response = await _httpClient.GetAsync($"api/Maquinaria/search?term={searchTerm}");
+            if (response.IsSuccessStatusCode)
             {
-                return false; // No se encontró la maquinaria
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Maquinaria>>(json);
             }
-
-            _maquinarias.Remove(maquinaria); // Eliminar maquinaria
-            return true; // Indica que se eliminó correctamente
-        }
-
-        // Busca maquinarias por ID basado en un término de búsqueda
-        public List<Maquinaria> BuscarMaquinariasPorId(string searchTerm)
-        {
-            return _maquinarias
-                .Where(m => m.IdInventario.ToString().Contains(searchTerm))
-                .ToList(); // Retorna la lista de maquinarias que coinciden
+            return new List<Maquinaria>(); // Retorna una lista vacía si no hay éxito
         }
     }
 }

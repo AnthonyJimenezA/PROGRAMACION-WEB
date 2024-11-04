@@ -1,69 +1,72 @@
-﻿using Proyecto_1__CRUD.Models;
+﻿using Newtonsoft.Json;
+using Proyecto_1__CRUD.Models;
+using System.Text;
 
 namespace Proyecto_1__CRUD.Services
 {
     public class EmpleadoService : IEmpleadoService
     {
-        // Hacemos la lista estática para que persista en todo el proyecto
-        private static readonly List<Empleado> _empleados = new List<Empleado>();
+        private readonly HttpClient _httpClient;
 
-        public List<Empleado> ObtenerEmpleados()
+        public EmpleadoService(HttpClient httpClient)
         {
-            return _empleados; // Retorna la lista de empleados
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri("http://localhost:5191/"); // Cambia esto por la URL de tu API
         }
 
-        public Empleado ObtenerEmpleadoPorCedula(string cedula)
+        public async Task<List<Empleado>> ObtenerEmpleados()
         {
-            return _empleados.FirstOrDefault(e => e.Cedula == cedula); // Busca el empleado por cédula
-        }
-
-        public bool AgregarEmpleado(Empleado empleado)
-        {
-            // Verificar si ya existe un empleado con la misma cédula
-            if (_empleados.Any(e => e.Cedula == empleado.Cedula))
+            var response = await _httpClient.GetAsync("api/Empleado");
+            if (response.IsSuccessStatusCode)
             {
-                return false; // Indica que el empleado no se pudo agregar
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Empleado>>(json);
             }
-
-            _empleados.Add(empleado); // Agregar el nuevo empleado
-            return true; // Indica que el empleado se agregó correctamente
+            return new List<Empleado>(); // Retorna una lista vacía si no hay éxito
         }
 
-        public bool ActualizarEmpleado(Empleado empleado)
+        public async Task<Empleado> ObtenerEmpleadoPorCedula(string cedula)
         {
-            var empleadoExistente = _empleados.FirstOrDefault(e => e.Cedula == empleado.Cedula);
-            if (empleadoExistente == null)
+            var response = await _httpClient.GetAsync($"api/Empleado/{cedula}");
+            if (response.IsSuccessStatusCode)
             {
-                return false; // Indica que el empleado no se pudo actualizar
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Empleado>(json);
             }
-
-            // Actualizar los datos del empleado existente
-            empleadoExistente.NombreCompleto = empleado.NombreCompleto;
-            empleadoExistente.FechaNacimiento = empleado.FechaNacimiento;
-            empleadoExistente.Lateralidad = empleado.Lateralidad;
-            empleadoExistente.FechaIngreso = empleado.FechaIngreso;
-            empleadoExistente.SalarioPorHora = empleado.SalarioPorHora;
-
-            return true; // Indica que el empleado se actualizó correctamente
+            return null; // Retorna null si no se encuentra el empleado
         }
 
-        public bool EliminarEmpleado(string cedula)
+        public async Task<bool> AgregarEmpleado(Empleado empleado)
         {
-            var empleado = _empleados.FirstOrDefault(e => e.Cedula == cedula);
-            if (empleado == null)
+            var json = JsonConvert.SerializeObject(empleado);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("api/Empleado", content);
+            return response.IsSuccessStatusCode; // Retorna true si se agregó correctamente
+        }
+
+        public async Task<bool> ActualizarEmpleado(Empleado empleado)
+        {
+            var json = JsonConvert.SerializeObject(empleado);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"api/Empleado/{empleado.Cedula}", content);
+            return response.IsSuccessStatusCode; // Retorna true si se actualizó correctamente
+        }
+
+        public async Task<bool> EliminarEmpleado(string cedula)
+        {
+            var response = await _httpClient.DeleteAsync($"api/Empleado/{cedula}");
+            return response.IsSuccessStatusCode; // Retorna true si se eliminó correctamente
+        }
+
+        public async Task<List<Empleado>> BuscarEmpleadosPorCedula(string searchTerm)
+        {
+            var response = await _httpClient.GetAsync($"api/Empleado/search?term={searchTerm}");
+            if (response.IsSuccessStatusCode)
             {
-                return false; // Indica que el empleado no se pudo eliminar
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Empleado>>(json);
             }
-
-            _empleados.Remove(empleado); // Eliminar el empleado
-            return true; // Indica que el empleado se eliminó correctamente
-        }
-
-        public List<Empleado> BuscarEmpleadosPorCedula(string searchTerm)
-        {
-            return _empleados
-                .Where(e => e.Cedula.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            return new List<Empleado>(); // Retorna una lista vacía si no hay éxito
         }
 
     }

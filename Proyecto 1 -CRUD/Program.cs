@@ -13,6 +13,13 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IMaquinariaService, MaquinariaService>();
 builder.Services.AddScoped<IMantenimientoService, MantenimientoService>();
 
+// Register HttpClient for IClienteService
+builder.Services.AddHttpClient<IClienteService, ClienteService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5191/"); // Cambia esto por la URL de tu API
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
