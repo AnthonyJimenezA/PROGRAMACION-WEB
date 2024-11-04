@@ -50,6 +50,13 @@ namespace Proyecto_1__CRUD.Controllers
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
+
+                if (!mantenimiento.ProductoAplicado)
+                {
+                    // Si no está seleccionado, establecer "Producto" en null o en blanco
+                    mantenimiento.Producto = string.Empty; // O null dependiendo de cómo manejes tus datos
+                }
+
                 // Intenta agregar el nuevo mantenimiento
                 if (await _mantenimientoService.AgregarMantenimiento(mantenimiento))
                 {
@@ -94,6 +101,12 @@ namespace Proyecto_1__CRUD.Controllers
         {
             if (ModelState.IsValid) // Verifica que el modelo sea válido
             {
+                if (!mantenimiento.ProductoAplicado)
+                {
+                    // Si no está seleccionado, establecer "Producto" en null o en blanco
+                    mantenimiento.Producto = string.Empty; // O null dependiendo de cómo manejes tus datos
+                }
+
                 // Intenta actualizar el mantenimiento
                 if (await _mantenimientoService.ActualizarMantenimiento(mantenimiento))
                 {

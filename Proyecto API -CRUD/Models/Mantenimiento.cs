@@ -16,10 +16,9 @@
 
         public double M2CercaViva { get; set; }
 
-        public int DiasSinChapia { get; set; } 
+        public int DiasSinChapia => (DateTime.Now - FechaEjecutado).Days;
 
-
-        public DateTime FechaSiguienteChapia { get; set; } 
+        public DateTime FechaSiguienteChapia => CalcularFechaSiguienteChapia();
 
         public string PreferenciaFrecuencia { get; set; } 
 
@@ -46,13 +45,14 @@
 
         public double IVA { get; set; } = 13.0;
 
-        public string Estado { get; set; } 
+        public string Estado { get; set; }
 
 
         public double CostoTotal
         {
             get
             {
+                // Cálculo del costo base
                 double costoTotal = (M2Propiedad + M2CercaViva) * CostoChapiaPorM2;
 
                 if (ProductoAplicado && !string.IsNullOrEmpty(Producto))
@@ -63,8 +63,33 @@
                 // Aplicar IVA
                 costoTotal += (costoTotal * IVA) / 100;
 
-                return costoTotal;
+                // Aplicar descuento si corresponde
+                double descuento = CalcularDescuento(M2Propiedad);
+                costoTotal -= (costoTotal * descuento) / 100;
+
+                return Math.Round(costoTotal, 2);
             }
         }
+
+        private double CalcularDescuento(double m2Terreno)
+        {
+            if (m2Terreno >= 400 && m2Terreno <= 900)
+                return 2;
+            else if (m2Terreno >= 901 && m2Terreno <= 1500)
+                return 3;
+            else if (m2Terreno >= 1501 && m2Terreno <= 2000)
+                return 4;
+            else if (m2Terreno > 2000)
+                return 5;
+            else
+                return 0; // No hay descuento para menos de 400 m2
+        }
+
+        private DateTime CalcularFechaSiguienteChapia()
+        {
+            int diasAdicionales = PreferenciaFrecuencia.ToLower() == "quincenal" ? 15 : 30;
+            return FechaEjecutado.AddDays(diasAdicionales);
+        }
+
     }
 }

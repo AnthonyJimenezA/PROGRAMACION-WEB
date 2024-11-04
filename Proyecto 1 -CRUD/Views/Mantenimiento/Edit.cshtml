@@ -93,7 +93,7 @@
 
                     <div class="form-group mb-3">
                         <label asp-for="Producto" class="form-label"></label>
-                        <select asp-for="Producto" class="form-control">
+                        <select asp-for="Producto" class="form-control" id="productoSelect" disabled>
                             <option value="">Seleccione Producto Aplicado</option>
                             <option value="Random">Random</option>
                             <option value="Coyolillo">Coyolillo</option>
@@ -149,5 +149,14 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script>
+            document.getElementById('productoAplicado').addEventListener('change', function () {
+                var productoSelect = document.getElementById('productoSelect');
+                productoSelect.disabled = !this.checked; // Deshabilita o habilita el select
+                if (!this.checked) {
+                    productoSelect.value = ""; // Limpia el valor si se desmarca
+                }
+            });
+        </script>
     }
 }
