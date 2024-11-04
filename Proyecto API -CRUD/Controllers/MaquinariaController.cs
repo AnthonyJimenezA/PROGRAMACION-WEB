@@ -109,5 +109,25 @@ namespace Proyecto_API__CRUD.Controllers
                 return StatusCode(500, new { Message = "Error al eliminar la maquinaria", Details = ex.Message });
             }
         }
+
+        // GET api/Maquinaria/search?term={term}
+        [HttpGet("search")]
+        public ActionResult<IEnumerable<Maquinaria>> BuscarMaquinariasPorCedula([FromQuery] string term)
+        {
+            try
+            {
+                var clientes = _memory.ObtenerMaquinarias(term);
+                if (!clientes.Any())
+                {
+                    return NotFound(new { Message = "No se encontraron maquinarias que coincidan con el término de búsqueda." });
+                }
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Error al buscar maquinarias.", Details = ex.Message });
+            }
+        }
+
     }
 }

@@ -15,7 +15,15 @@ namespace Proyecto_API__CRUD.Data
         private static readonly CacheItemPolicy _cachePolicy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(30) };
 
         // Métodos CRUD para la entidad Cliente
-        public List<Cliente> ObtenerClientes() => _clientesCache.Select(c => (Cliente)c.Value).ToList();
+        public List<Cliente> ObtenerClientes(string search = null)
+        {
+            var clientes = _clientesCache.Select(c => (Cliente)c.Value);
+            if (!string.IsNullOrEmpty(search))
+            {
+                clientes = clientes.Where(c => c.Identificacion.Contains(search));
+            }
+            return clientes.ToList();
+        }
 
         public Cliente ObtenerClientePorId(string id) => _clientesCache.Get(id) as Cliente;
 
@@ -39,7 +47,15 @@ namespace Proyecto_API__CRUD.Data
         }
 
         // Métodos CRUD para la entidad Empleado
-        public List<Empleado> ObtenerEmpleados() => _empleadosCache.Select(e => (Empleado)e.Value).ToList();
+        public List<Empleado> ObtenerEmpleados(string search = null)
+        {
+            var empleados = _empleadosCache.Select(e => (Empleado)e.Value);
+            if (!string.IsNullOrEmpty(search))
+            {
+                empleados = empleados.Where(e => e.Cedula.Contains(search));
+            }
+            return empleados.ToList();
+        }
 
         public Empleado ObtenerEmpleadoPorId(string id) => _empleadosCache.Get(id) as Empleado;
 
@@ -63,7 +79,15 @@ namespace Proyecto_API__CRUD.Data
         }
 
         // Métodos CRUD para la entidad Mantenimiento
-        public List<Mantenimiento> ObtenerMantenimientos() => _mantenimientosCache.Select(m => (Mantenimiento)m.Value).ToList();
+        public List<Mantenimiento> ObtenerMantenimientos(string search = null)
+        {
+            var mantenimientos = _mantenimientosCache.Select(m => (Mantenimiento)m.Value);
+            if (!string.IsNullOrEmpty(search))
+            {
+                mantenimientos = mantenimientos.Where(m => m.IdMantenimiento.ToString().Contains(search));
+            }
+            return mantenimientos.ToList();
+        }
 
         public Mantenimiento ObtenerMantenimientoPorId(string id) => _mantenimientosCache.Get(id) as Mantenimiento;
 
@@ -87,7 +111,15 @@ namespace Proyecto_API__CRUD.Data
         }
 
         // Métodos CRUD para la entidad Maquinaria
-        public List<Maquinaria> ObtenerMaquinarias() => _maquinariasCache.Select(m => (Maquinaria)m.Value).ToList();
+        public List<Maquinaria> ObtenerMaquinarias(string search = null)
+        {
+            var maquinarias = _maquinariasCache.Select(m => (Maquinaria)m.Value);
+            if (!string.IsNullOrEmpty(search))
+            {
+                maquinarias = maquinarias.Where(m => m.IdInventario.ToString().Contains(search));
+            }
+            return maquinarias.ToList();
+        }
 
         public Maquinaria ObtenerMaquinariaPorId(string id) => _maquinariasCache.Get(id) as Maquinaria;
 

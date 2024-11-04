@@ -103,5 +103,26 @@ namespace Proyecto_API__CRUD.Controllers
                 return StatusCode(500, new { Message = "Error al eliminar el empleado.", Details = ex.Message });
             }
         }
+
+
+        // GET api/Empleado/search?term={term}
+        [HttpGet("search")]
+        public ActionResult<IEnumerable<Empleado>> BuscarEmpleadosPorCedula([FromQuery] string term)
+        {
+            try
+            {
+                var clientes = _memory.ObtenerEmpleados(term);
+                if (!clientes.Any())
+                {
+                    return NotFound(new { Message = "No se encontraron empleados que coincidan con el término de búsqueda." });
+                }
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Error al buscar clientes.", Details = ex.Message });
+            }
+        }
+
     }
 }

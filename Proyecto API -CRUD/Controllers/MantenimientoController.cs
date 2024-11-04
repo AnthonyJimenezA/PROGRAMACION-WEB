@@ -109,5 +109,25 @@ namespace Proyecto_API__CRUD.Controllers
                 return StatusCode(500, new { Message = "Error al eliminar el mantenimiento", Details = ex.Message });
             }
         }
+
+        // GET api/Mantenimiento/search?term={term}
+        [HttpGet("search")]
+        public ActionResult<IEnumerable<Mantenimiento>> BuscarMantenimientosPorCedula([FromQuery] string term)
+        {
+            try
+            {
+                var clientes = _memory.ObtenerMantenimientos(term);
+                if (!clientes.Any())
+                {
+                    return NotFound(new { Message = "No se encontraron mantenimientos que coincidan con el término de búsqueda." });
+                }
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Error al buscar mantenimientos.", Details = ex.Message });
+            }
+        }
+
     }
 }

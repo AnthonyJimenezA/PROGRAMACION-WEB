@@ -110,5 +110,25 @@ namespace Proyecto_API__CRUD.Controllers
                 return StatusCode(500, new { Message = "Error al eliminar el cliente.", Details = ex.Message });
             }
         }
+
+        // GET api/Cliente/search?term={term}
+        [HttpGet("search")]
+        public ActionResult<IEnumerable<Cliente>> BuscarClientesPorCedula([FromQuery] string term)
+        {
+            try
+            {
+                var clientes = _memory.ObtenerClientes(term);
+                if (!clientes.Any())
+                {
+                    return NotFound(new { Message = "No se encontraron clientes que coincidan con el término de búsqueda." });
+                }
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Error al buscar clientes.", Details = ex.Message });
+            }
+        }
+
     }
 }

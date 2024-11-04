@@ -136,5 +136,7 @@ namespace Proyecto_1__CRUD.Controllers
                 return NotFound(); // Retorna error 404 si no se encuentra
             }
         }
+
+
     }
 }
