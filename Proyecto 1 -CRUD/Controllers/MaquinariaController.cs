@@ -60,7 +60,7 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Maquinaria/Edit/idInventario
-        public async Task<IActionResult> Edit(int idInventario)
+        public async Task<IActionResult> Edit(string idInventario)
         {
             var maquinaria = await _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
             return maquinaria == null ? NotFound() : View(maquinaria); // Retorna la vista para editar o error 404
@@ -86,7 +86,7 @@ namespace Proyecto_1__CRUD.Controllers
         }
 
         // GET: Maquinaria/Delete/idInventario
-        public async Task<IActionResult> Delete(int idInventario)
+        public async Task<IActionResult> Delete(string idInventario)
         {
             var maquinaria = await _maquinariaService.ObtenerMaquinariaPorId(idInventario); // Obtiene la maquinaria por ID
             return maquinaria == null ? NotFound() : View(maquinaria); // Retorna vista de confirmación o error 404
@@ -95,7 +95,7 @@ namespace Proyecto_1__CRUD.Controllers
         // POST: Maquinaria/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int idInventario)
+        public async Task<IActionResult> DeleteConfirmed(string idInventario)
         {
             // Intenta eliminar la maquinaria
             bool deleted = await _maquinariaService.EliminarMaquinaria(idInventario);

@@ -1,8 +1,11 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Proyecto_API__CRUD.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<Proyecto_API__CRUDContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Proyecto_API__CRUDContext") ?? throw new InvalidOperationException("Connection string 'Proyecto_API__CRUDContext' not found.")));
 
 
-
-builder.Services.AddSingleton<Proyecto_API__CRUD.Data.Memory>(); // Registering the Memory cache service
 
 
 // Add services to the container.

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Proyecto_API__CRUD.Data;
 using Proyecto_API__CRUD.Models;
 
@@ -11,20 +12,20 @@ namespace Proyecto_API__CRUD.Controllers
     public class ClienteController : ControllerBase
     {
 
-        private readonly Memory _memory;
+        private readonly Proyecto_API__CRUDContext _context;
 
-        public ClienteController()
+        public ClienteController(Proyecto_API__CRUDContext context)
         {
-            _memory = new Memory();
+            _context = context;
         }
 
         // GET: api/Cliente
         [HttpGet]
-        public ActionResult<IEnumerable<Cliente>> Get()
+        public async Task<ActionResult<IEnumerable<Cliente>>> Get()
         {
             try
             {
-                var clientes = _memory.ObtenerClientes();
+                var clientes = await _context.Cliente.ToListAsync();
                 return Ok(clientes);
             }
             catch (Exception ex)
@@ -35,11 +36,11 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Cliente/{identificacion}
         [HttpGet("{identificacion}")]
-        public ActionResult<Cliente> Get(string identificacion)
+        public async Task<ActionResult<Cliente>> Get(string identificacion)
         {
             try
             {
-                var cliente = _memory.ObtenerClientePorId(identificacion);
+                var cliente = await _context.Cliente.FindAsync(identificacion);
                 if (cliente == null)
                 {
                     return NotFound(new { Message = "Cliente no encontrado." });
@@ -54,15 +55,19 @@ namespace Proyecto_API__CRUD.Controllers
 
         // POST api/Cliente
         [HttpPost]
-        public ActionResult Post([FromBody] Cliente cliente)
+        public async Task<ActionResult> Post([FromBody] Cliente cliente)
         {
             try
             {
-                if (_memory.AgregarCliente(cliente))
+                var existeCliente = await _context.Cliente.AnyAsync(c => c.Identificacion == cliente.Identificacion);
+                if (existeCliente)
                 {
-                    return CreatedAtAction(nameof(Get), new { identificacion = cliente.Identificacion }, cliente);
+                    return Conflict(new { Message = "Ya existe un cliente con esa identificación." });
                 }
-                return Conflict(new { Message = "Ya existe un cliente con esa identificación." });
+
+                _context.Cliente.Add(cliente);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(Get), new { identificacion = cliente.Identificacion }, cliente);
             }
             catch (Exception ex)
             {
@@ -72,20 +77,25 @@ namespace Proyecto_API__CRUD.Controllers
 
         // PUT api/Cliente/{identificacion}
         [HttpPut("{identificacion}")]
-        public ActionResult Put(string identificacion, [FromBody] Cliente cliente)
+        public async Task<ActionResult> Put(string identificacion, [FromBody] Cliente cliente)
         {
             try
             {
-                if (cliente.Identificacion.ToString() != identificacion)
+                if (cliente.Identificacion != identificacion)
                 {
                     return BadRequest(new { Message = "La identificación en el cuerpo no coincide con el parámetro de la URL." });
                 }
 
-                if (_memory.ActualizarCliente(cliente))
+                var clienteExistente = await _context.Cliente.FindAsync(identificacion);
+                if (clienteExistente == null)
                 {
-                    return NoContent();
+                    return NotFound(new { Message = "Cliente no encontrado para actualización." });
                 }
-                return NotFound(new { Message = "Cliente no encontrado para actualización." });
+
+                _context.Entry(clienteExistente).CurrentValues.SetValues(cliente);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -95,15 +105,19 @@ namespace Proyecto_API__CRUD.Controllers
 
         // DELETE api/Cliente/{identificacion}
         [HttpDelete("{identificacion}")]
-        public ActionResult Delete(string identificacion)
+        public async Task<ActionResult> Delete(string identificacion)
         {
             try
             {
-                if (_memory.EliminarCliente(identificacion))
+                var cliente = await _context.Cliente.FindAsync(identificacion);
+                if (cliente == null)
                 {
-                    return NoContent();
+                    return NotFound(new { Message = "Cliente no encontrado para eliminación." });
                 }
-                return NotFound(new { Message = "Cliente no encontrado para eliminación." });
+
+                _context.Cliente.Remove(cliente);
+                await _context.SaveChangesAsync();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -113,15 +127,19 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Cliente/search?term={term}
         [HttpGet("search")]
-        public ActionResult<IEnumerable<Cliente>> BuscarClientesPorCedula([FromQuery] string term)
+        public async Task<ActionResult<IEnumerable<Cliente>>> BuscarClientesPorCedula([FromQuery] string term)
         {
             try
             {
-                var clientes = _memory.ObtenerClientes(term);
+                var clientes = await _context.Cliente
+                     .Where(c => c.Identificacion.Contains(term))
+                     .ToListAsync();
+
                 if (!clientes.Any())
                 {
                     return NotFound(new { Message = "No se encontraron clientes que coincidan con el término de búsqueda." });
                 }
+
                 return Ok(clientes);
             }
             catch (Exception ex)

@@ -1,8 +1,10 @@
-﻿namespace Proyecto_API__CRUD.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Proyecto_API__CRUD.Models
 {
     public class Cliente
     {
-
+        [Key]
         public string Identificacion { get; set; }
 
         public string NombreCompleto { get; set; }

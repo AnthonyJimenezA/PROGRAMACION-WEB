@@ -25,7 +25,7 @@ namespace Proyecto_1__CRUD.Services
             return new List<Maquinaria>(); // Retorna una lista vacía si no hay éxito
         }
 
-        public async Task<Maquinaria> ObtenerMaquinariaPorId(int idInventario)
+        public async Task<Maquinaria> ObtenerMaquinariaPorId(string idInventario)
         {
             var response = await _httpClient.GetAsync($"api/Maquinaria/{idInventario}");
             if (response.IsSuccessStatusCode)
@@ -52,7 +52,7 @@ namespace Proyecto_1__CRUD.Services
             return response.IsSuccessStatusCode; // Retorna true si se actualizó correctamente
         }
 
-        public async Task<bool> EliminarMaquinaria(int idInventario)
+        public async Task<bool> EliminarMaquinaria(string idInventario)
         {
             var response = await _httpClient.DeleteAsync($"api/Maquinaria/{idInventario}");
             return response.IsSuccessStatusCode; // Retorna true si se eliminó correctamente

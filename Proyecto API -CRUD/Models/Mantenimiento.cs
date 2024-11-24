@@ -1,8 +1,10 @@
-﻿namespace Proyecto_API__CRUD.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Proyecto_API__CRUD.Models
 {
     public class Mantenimiento
     {
-
+        [Key]
         public int IdMantenimiento { get; set; }
 
 
@@ -12,9 +14,9 @@
 
         public DateTime FechaAgendado { get; set; }
 
-        public double M2Propiedad { get; set; }
+        public decimal M2Propiedad { get; set; }
 
-        public double M2CercaViva { get; set; }
+        public decimal M2CercaViva { get; set; }
 
         public int DiasSinChapia => (DateTime.Now - FechaEjecutado).Days;
 
@@ -37,23 +39,23 @@
 
         public string Producto { get; set; } 
 
-        public double CostoChapiaPorM2 { get; set; }
+        public decimal CostoChapiaPorM2 { get; set; }
 
 
-        public double CostoAplicacionProductoPorM2 { get; set; }
+        public decimal CostoAplicacionProductoPorM2 { get; set; }
 
 
-        public double IVA { get; set; } = 13.0;
+        public decimal IVA { get; set; } = 13.0m;
 
         public string Estado { get; set; }
 
 
-        public double CostoTotal
+        public decimal CostoTotal
         {
             get
             {
                 // Cálculo del costo base
-                double costoTotal = (M2Propiedad + M2CercaViva) * CostoChapiaPorM2;
+                decimal costoTotal = (M2Propiedad + M2CercaViva) * CostoChapiaPorM2;
 
                 if (ProductoAplicado && !string.IsNullOrEmpty(Producto))
                 {
@@ -64,14 +66,14 @@
                 costoTotal += (costoTotal * IVA) / 100;
 
                 // Aplicar descuento si corresponde
-                double descuento = CalcularDescuento(M2Propiedad);
+                decimal descuento = CalcularDescuento((double)M2Propiedad);
                 costoTotal -= (costoTotal * descuento) / 100;
 
                 return Math.Round(costoTotal, 2);
             }
         }
 
-        private double CalcularDescuento(double m2Terreno)
+        private decimal CalcularDescuento(double m2Terreno)
         {
             if (m2Terreno >= 400 && m2Terreno <= 900)
                 return 2;

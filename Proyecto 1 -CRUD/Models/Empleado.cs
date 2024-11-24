@@ -22,7 +22,7 @@ namespace Proyecto_1__CRUD.Models
 
         [Required(ErrorMessage = "La lateralidad es obligatoria.")]
         [Display(Name = "Lateralidad")]
-        public string Lateralidad { get; set; } // "Diestro" o "Zurdo"
+        public string Lateralidad { get; set; } // "Diestro" o "Zurdo" "Ambidiestro"
 
         [Required(ErrorMessage = "La fecha de ingreso es obligatoria.")]
         [DataType(DataType.Date)]

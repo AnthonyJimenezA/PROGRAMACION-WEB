@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Proyecto_API__CRUD.Data;
 using Proyecto_API__CRUD.Models;
 
@@ -10,20 +11,20 @@ namespace Proyecto_API__CRUD.Controllers
     [ApiController]
     public class MaquinariaController : ControllerBase
     {
-        private readonly Memory _memory;
+        private readonly Proyecto_API__CRUDContext _context;
 
-        public MaquinariaController()
+        public MaquinariaController(Proyecto_API__CRUDContext context)
         {
-            _memory = new Memory();
+            _context = context;
         }
 
         // GET: api/Maquinaria
         [HttpGet]
-        public ActionResult<IEnumerable<Maquinaria>> Get()
+        public async Task<ActionResult<IEnumerable<Maquinaria>>> Get()
         {
             try
             {
-                var maquinarias = _memory.ObtenerMaquinarias();
+                var maquinarias = await _context.Maquinaria.ToListAsync();
                 return Ok(maquinarias);
             }
             catch (Exception ex)
@@ -34,11 +35,11 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Maquinaria/{id}
         [HttpGet("{id}")]
-        public ActionResult<Maquinaria> Get(string id)
+        public async Task<ActionResult<Maquinaria>> Get(int id)
         {
             try
             {
-                var maquinaria = _memory.ObtenerMaquinariaPorId(id);
+                var maquinaria = await _context.Maquinaria.FindAsync(id);
                 if (maquinaria == null)
                 {
                     return NotFound(new { Message = "Maquinaria no encontrada" });
@@ -53,15 +54,22 @@ namespace Proyecto_API__CRUD.Controllers
 
         // POST api/Maquinaria
         [HttpPost]
-        public ActionResult Post([FromBody] Maquinaria maquinaria)
+        public async Task<ActionResult> Post([FromBody] Maquinaria maquinaria)
         {
             try
             {
-                if (_memory.AgregarMaquinaria(maquinaria))
+                var existeMaquinaria = await _context.Maquinaria.AnyAsync(m => m.IdInventario == maquinaria.IdInventario);
+
+                if (existeMaquinaria)
                 {
-                    return CreatedAtAction(nameof(Get), new { id = maquinaria.IdInventario }, maquinaria);
+                    return Conflict(new { Message = "Ya existe una maquinaria con ese ID." });
+
                 }
-                return Conflict(new { Message = "Ya existe una maquinaria con ese ID." });
+
+                _context.Add(maquinaria);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(Get), new { idInventario = maquinaria.IdInventario }, maquinaria);
+
             }
             catch (Exception ex)
             {
@@ -71,20 +79,25 @@ namespace Proyecto_API__CRUD.Controllers
 
         // PUT api/Maquinaria/{id}
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Maquinaria maquinaria)
+        public async  Task<ActionResult> Put(int id, [FromBody] Maquinaria maquinaria)
         {
             try
             {
                 if (maquinaria.IdInventario != id)
                 {
-                    return BadRequest(new { Message = "El ID en el cuerpo no coincide con el parámetro de la URL." });
+                    return BadRequest(new { Message = "La identificación en el cuerpo no coincide con el parámetro de la URL." });
                 }
 
-                if (_memory.ActualizarMaquinaria(maquinaria))
+                var maquinariaExistente = await _context.Maquinaria.FindAsync(id);
+                if (maquinariaExistente == null)
                 {
-                    return NoContent();
+                    return NotFound(new { Message = "Maquinaria no encontrado para actualización." });
                 }
-                return NotFound(new { Message = "Maquinaria no encontrada para actualización." });
+
+                _context.Entry(maquinariaExistente).CurrentValues.SetValues(maquinaria);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -94,15 +107,19 @@ namespace Proyecto_API__CRUD.Controllers
 
         // DELETE api/Maquinaria/{id}
         [HttpDelete("{id}")]
-        public ActionResult Delete(string id)
+        public async  Task<ActionResult> Delete(string id)
         {
             try
             {
-                if (_memory.EliminarMaquinaria(id))
+                var maquinaria = await _context.Maquinaria.FindAsync(id);
+                if (maquinaria == null)
                 {
-                    return NoContent();
+                    return NotFound(new { Message = "Maquinaria no encontrado para eliminación." });
                 }
-                return NotFound(new { Message = "Maquinaria no encontrada para eliminación." });
+
+                _context.Maquinaria.Remove(maquinaria);
+                await _context.SaveChangesAsync();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -112,16 +129,21 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Maquinaria/search?term={term}
         [HttpGet("search")]
-        public ActionResult<IEnumerable<Maquinaria>> BuscarMaquinariasPorCedula([FromQuery] string term)
+        public async Task<ActionResult<IEnumerable<Maquinaria>>> BuscarMaquinariasPorCedula([FromQuery] string term)
         {
             try
             {
-                var clientes = _memory.ObtenerMaquinarias(term);
-                if (!clientes.Any())
+                var maquinarias = await _context.Maquinaria
+                 .Where(m => m.IdInventario.ToString().Contains(term))
+                 .ToListAsync();
+
+
+                if (!maquinarias.Any())
                 {
                     return NotFound(new { Message = "No se encontraron maquinarias que coincidan con el término de búsqueda." });
                 }
-                return Ok(clientes);
+
+                return Ok(maquinarias);
             }
             catch (Exception ex)
             {

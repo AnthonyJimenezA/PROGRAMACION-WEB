@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Proyecto_API__CRUD.Data;
 using Proyecto_API__CRUD.Models;
 
@@ -10,20 +11,20 @@ namespace Proyecto_API__CRUD.Controllers
     [ApiController]
     public class EmpleadoController : ControllerBase
     {
-        private readonly Memory _memory;
+        private readonly Proyecto_API__CRUDContext _context;
 
-        public EmpleadoController()
+        public EmpleadoController(Proyecto_API__CRUDContext context)
         {
-            _memory = new Memory();
+            _context = context;
         }
 
         // GET: api/Empleado
         [HttpGet]
-        public ActionResult<IEnumerable<Empleado>> GetAll()
+        public async Task<ActionResult<IEnumerable<Empleado>>> Get()
         {
             try
             {
-                var empleados = _memory.ObtenerEmpleados();
+                var empleados = await _context.Empleado.ToListAsync();
                 return Ok(empleados);
             }
             catch (Exception ex)
@@ -34,11 +35,11 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Empleado/{id}
         [HttpGet("{id}")]
-        public ActionResult<Empleado> Get(string id)
+        public async Task<ActionResult<Empleado>> Get(string id)
         {
             try
             {
-                var empleado = _memory.ObtenerEmpleadoPorId(id);
+                var empleado = await _context.Empleado.FindAsync(id);
                 if (empleado == null)
                     return NotFound(new { Message = "Empleado no encontrado." });
 
@@ -52,14 +53,17 @@ namespace Proyecto_API__CRUD.Controllers
 
         // POST api/Empleado
         [HttpPost]
-        public ActionResult Post([FromBody] Empleado empleado)
+        public async Task<ActionResult> Post([FromBody] Empleado empleado)
         {
             try
             {
-                if (_memory.AgregarEmpleado(empleado))
-                    return CreatedAtAction(nameof(Get), new { id = empleado.Cedula }, empleado);
+                var existeEmpleado = await _context.Empleado.AnyAsync(e => e.Cedula == empleado.Cedula);
+                if (existeEmpleado)
+                    return Conflict(new { Message = "Ya existe un empleado con esa cédula." });
 
-                return Conflict(new { Message = "Ya existe un empleado con esa cédula." });
+                _context.Empleado.Add(empleado);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(Get), new { id = empleado.Cedula }, empleado);
             }
             catch (Exception ex)
             {
@@ -69,17 +73,25 @@ namespace Proyecto_API__CRUD.Controllers
 
         // PUT api/Empleado/{id}
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Empleado empleado)
+        public async Task<ActionResult> Put(string id, [FromBody] Empleado empleado)
         {
             try
             {
-                if (empleado.Cedula != id.ToString())
+                if (empleado.Cedula != id)
+                {
                     return BadRequest(new { Message = "La cédula en el cuerpo no coincide con el parámetro de la URL." });
+                }
 
-                if (_memory.ActualizarEmpleado(empleado))
-                    return NoContent();
+                var empleadoExistente = await _context.Empleado.FindAsync(id);
+                if (empleadoExistente == null)
+                {
+                    return NotFound(new { Message = "Empleado no encontrado para actualización." });
+                }
 
-                return NotFound(new { Message = "Empleado no encontrado para actualización." });
+                _context.Entry(empleadoExistente).CurrentValues.SetValues(empleado);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -89,14 +101,20 @@ namespace Proyecto_API__CRUD.Controllers
 
         // DELETE api/Empleado/{id}
         [HttpDelete("{id}")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
             try
             {
-                if (_memory.EliminarEmpleado(id))
-                    return NoContent();
 
-                return NotFound(new { Message = "Empleado no encontrado para eliminación." });
+                var empleado = await _context.Empleado.FindAsync(id);
+                if (empleado == null)
+                    return NotFound(new {Message = "Empleado no encontrado para eliminación." });
+
+                
+                _context.Empleado.Remove(empleado);
+                await _context.SaveChangesAsync();
+                return NoContent();
+              
             }
             catch (Exception ex)
             {
@@ -107,16 +125,21 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Empleado/search?term={term}
         [HttpGet("search")]
-        public ActionResult<IEnumerable<Empleado>> BuscarEmpleadosPorCedula([FromQuery] string term)
+        public async Task<ActionResult<IEnumerable<Empleado>>> BuscarEmpleadosPorCedula([FromQuery] string term)
         {
             try
             {
-                var clientes = _memory.ObtenerEmpleados(term);
-                if (!clientes.Any())
+                var empleados = await _context.Empleado
+                    .Where(e => e.Cedula.Contains(term))
+                    .ToListAsync();
+
+
+                if (!empleados.Any())
                 {
                     return NotFound(new { Message = "No se encontraron empleados que coincidan con el término de búsqueda." });
                 }
-                return Ok(clientes);
+                return Ok(empleados);
+
             }
             catch (Exception ex)
             {
