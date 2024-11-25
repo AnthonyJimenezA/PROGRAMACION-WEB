@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Proyecto_API__CRUD.Data;
-using Proyecto_API__CRUD.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Proyecto_API__CRUD.Controllers
 {
@@ -10,82 +8,70 @@ namespace Proyecto_API__CRUD.Controllers
     [ApiController]
     public class ReportesController : ControllerBase
     {
-        private readonly Memory _memory;
+        private readonly Proyecto_API__CRUDContext _context;
 
-        public ReportesController(Memory memory)
+        public ReportesController(Proyecto_API__CRUDContext context)
         {
-            _memory = memory;
+            _context = context;
         }
 
-        // Reporte 1: Clientes que deben ser contactados para agendar mantenimiento la próxima semana
-        [HttpGet("clientes-proximos-mantenimientos")]
-        public ActionResult<List<Cliente>> ObtenerClientesProximosMantenimientos()
+        // Reporte 1: Clientes a contactar la próxima semana
+        [HttpGet("clientes-a-contactar")]
+        public async Task<ActionResult> ObtenerClientesAContactar()
         {
-            try
-            {
-                var mantenimientos = _memory.ObtenerMantenimientos(); // Obtener todos los mantenimientos
-                var clientes = _memory.ObtenerClientes(); // Obtener todos los clientes
+            // Definir la fecha de la próxima semana
+            var fechaInicio = DateTime.Now.AddDays(7 - (int)DateTime.Now.DayOfWeek); // Primer día de la próxima semana
+            var fechaFin = fechaInicio.AddDays(7); // Último día de la próxima semana
 
-                var fechaInicio = DateTime.Now.AddDays(7).StartOfWeek(DayOfWeek.Monday);
-                var fechaFin = fechaInicio.AddDays(7);
+            // Obtener todos los mantenimientos y clientes desde la base de datos
+            var mantenimientos = await _context.Mantenimiento.ToListAsync();
+            var clientes = await _context.Cliente.ToListAsync();
 
-                var clientesAContactar = mantenimientos
-                    .Where(m => m.FechaSiguienteChapia >= fechaInicio && m.FechaSiguienteChapia < fechaFin)
-                    .Select(m => clientes.FirstOrDefault(c => c.Identificacion == m.IdCliente))
-                    .Where(c => c != null)
-                    .Distinct()
-                    .ToList();
+            // Filtrar los datos en memoria
+            var clientesAContactar = mantenimientos
+                .Where(m => m.FechaSiguienteChapia >= fechaInicio && m.FechaSiguienteChapia <= fechaFin)
+                .Join(clientes,
+                    m => m.IdCliente,
+                    c => c.Identificacion,
+                    (m, c) => new
+                    {
+                        ClienteId = c.Identificacion,
+                        Nombre = c.NombreCompleto,
+                        MantenimientoId = m.IdMantenimiento,
+                        DateSiguienteChapia = m.FechaSiguienteChapia
+                    })
+                .ToList();
 
-                if (!clientesAContactar.Any())
-                {
-                    return NotFound("No hay clientes que deban ser contactados para mantenimiento la próxima semana.");
-                }
-
-                return Ok(clientesAContactar);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
+            return Ok(clientesAContactar);
         }
 
-        // Reporte 2: Clientes que no han agendado un servicio en más de dos meses
+        // Reporte 2: Clientes que no han agendado mantenimiento en más de dos meses
         [HttpGet("clientes-sin-mantenimiento")]
-        public ActionResult<List<Cliente>> ObtenerClientesSinMantenimiento()
+        public async Task<ActionResult> ObtenerClientesSinMantenimiento()
         {
-            try
-            {
-                var mantenimientos = _memory.ObtenerMantenimientos(); // Obtener todos los mantenimientos
-                var clientes = _memory.ObtenerClientes(); // Obtener todos los clientes
+            // Definir la fecha límite para dos meses atrás
+            var fechaLimite = DateTime.Now.AddMonths(-2); // Fecha límite para dos meses atrás
 
-                var fechaLimite = DateTime.Now.AddMonths(-2);
+            // Obtener todos los mantenimientos y clientes desde la base de datos
+            var mantenimientos = await _context.Mantenimiento.ToListAsync();
+            var clientes = await _context.Cliente.ToListAsync();
 
-                var clientesSinMantenimiento = clientes
-                    .Where(c => !mantenimientos.Any(m => m.IdCliente == c.Identificacion && m.FechaEjecutado >= fechaLimite))
-                    .ToList();
+            // Filtrar los datos en memoria
+            var clientesSinMantenimiento = mantenimientos
+                .Where(m => m.FechaAgendado < fechaLimite)
+                .Join(clientes,
+                    m => m.IdCliente,
+                    c => c.Identificacion,
+                    (m, c) => new
+                    {
+                        ClienteId = c.Identificacion,
+                        Nombre = c.NombreCompleto,
+                        MantenimientoId = m.IdMantenimiento,
+                        DateAgendado = m.FechaAgendado
+                    })
+                .ToList();
 
-                if (!clientesSinMantenimiento.Any())
-                {
-                    return NotFound("No hay clientes que no hayan agendado un servicio en más de dos meses.");
-                }
-
-                return Ok(clientesSinMantenimiento);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
-        }
-    }
-
-    // Extensión para obtener el inicio de la semana
-    public static class DateTimeExtensions
-    {
-        public static DateTime StartOfWeek(this DateTime dateTime, DayOfWeek startOfWeek)
-        {
-            int diff = (7 + (dateTime.DayOfWeek - startOfWeek)) % 7;
-            return dateTime.AddDays(-1 * diff).Date;
+            return Ok(clientesSinMantenimiento);
         }
     }
 }
-

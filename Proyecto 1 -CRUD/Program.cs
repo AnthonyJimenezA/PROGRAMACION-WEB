@@ -12,6 +12,7 @@ builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IMaquinariaService, MaquinariaService>();
 builder.Services.AddScoped<IMantenimientoService, MantenimientoService>();
+builder.Services.AddScoped<IReportesService, ReportesService>();
 
 // Register HttpClient for IClienteService
 builder.Services.AddHttpClient<IClienteService, ClienteService>(client =>

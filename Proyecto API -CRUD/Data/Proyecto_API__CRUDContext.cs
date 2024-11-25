@@ -10,10 +10,12 @@ namespace Proyecto_API__CRUD.Data
         {
         }
 
-        public DbSet<Proyecto_API__CRUD.Models.Cliente> Cliente { get; set; } = default!;
+        public DbSet<Cliente> Cliente { get; set; } = default!;
 
-        public DbSet<Proyecto_API__CRUD.Models.Empleado> Empleado { get; set; } = default!;
+        public DbSet<Empleado> Empleado { get; set; } = default!;
 
-        public DbSet<Proyecto_API__CRUD.Models.Maquinaria> Maquinaria { get; set; } = default!;
+        public DbSet<Maquinaria> Maquinaria { get; set; } = default!;
+        
+        public DbSet<Mantenimiento> Mantenimiento { get; set; } = default!;
     }
 }

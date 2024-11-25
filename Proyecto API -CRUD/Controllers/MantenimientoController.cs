@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Proyecto_API__CRUD.Data;
 using Proyecto_API__CRUD.Models;
 
@@ -10,20 +11,20 @@ namespace Proyecto_API__CRUD.Controllers
     [ApiController]
     public class MantenimientoController : ControllerBase
     {
-        private readonly Memory _memory;
+        private readonly Proyecto_API__CRUDContext _context;
 
-        public MantenimientoController()
+        public MantenimientoController(Proyecto_API__CRUDContext context)
         {
-            _memory = new Memory();
+            _context = context;
         }
 
         // GET: api/Mantenimiento
         [HttpGet]
-        public ActionResult<IEnumerable<Mantenimiento>> Get()
+        public async Task<ActionResult<IEnumerable<Mantenimiento>>> Get()
         {
             try
             {
-                var mantenimientos = _memory.ObtenerMantenimientos();
+                var mantenimientos = await _context.Mantenimiento.ToListAsync();
                 return Ok(mantenimientos);
             }
             catch (Exception ex)
@@ -34,14 +35,14 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Mantenimiento/{id}
         [HttpGet("{id}")]
-        public ActionResult<Mantenimiento> Get(string id)
+        public async Task<ActionResult<Mantenimiento>> Get(int id)
         {
             try
             {
-                var mantenimiento = _memory.ObtenerMantenimientoPorId(id);
+                var mantenimiento = await _context.Mantenimiento.FindAsync(id);
                 if (mantenimiento == null)
                 {
-                    return NotFound(new { Message = "Mantenimiento no encontrado" });
+                    return NotFound(new { Message = "Mantenimiento no encontrado." });
                 }
                 return Ok(mantenimiento);
             }
@@ -53,15 +54,19 @@ namespace Proyecto_API__CRUD.Controllers
 
         // POST api/Mantenimiento
         [HttpPost]
-        public ActionResult Post([FromBody] Mantenimiento mantenimiento)
+        public async Task<ActionResult> Post([FromBody] Mantenimiento mantenimiento)
         {
             try
             {
-                if (_memory.AgregarMantenimiento(mantenimiento))
+                var existeMantenimiento = await _context.Mantenimiento.AnyAsync(m => m.IdMantenimiento == mantenimiento.IdMantenimiento);
+                if (existeMantenimiento)
                 {
-                    return CreatedAtAction(nameof(Get), new { id = mantenimiento.IdMantenimiento }, mantenimiento);
+                    return Conflict(new { Message = "Ya existe un mantenimiento con esa identificación." });
                 }
-                return Conflict(new { Message = "Ya existe un mantenimiento con ese ID." });
+
+                _context.Mantenimiento.Add(mantenimiento);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(Get), new { identificacion = mantenimiento.IdMantenimiento }, mantenimiento);
             }
             catch (Exception ex)
             {
@@ -71,20 +76,25 @@ namespace Proyecto_API__CRUD.Controllers
 
         // PUT api/Mantenimiento/{id}
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Mantenimiento mantenimiento)
+        public async Task<ActionResult> Put(int id, [FromBody] Mantenimiento mantenimiento)
         {
             try
             {
                 if (mantenimiento.IdMantenimiento != id)
                 {
-                    return BadRequest(new { Message = "El ID en el cuerpo no coincide con el parámetro de la URL." });
+                    return BadRequest(new { Message = "La identificación en el cuerpo no coincide con el parámetro de la URL." });
                 }
 
-                if (_memory.ActualizarMantenimiento(mantenimiento))
+                var mantenimientoExistente = await _context.Mantenimiento.FindAsync(id);
+                if (mantenimientoExistente == null)
                 {
-                    return NoContent();
+                    return NotFound(new { Message = "Mantenimiento no encontrado para actualización." });
                 }
-                return NotFound(new { Message = "Mantenimiento no encontrado para actualización." });
+
+                _context.Entry(mantenimientoExistente).CurrentValues.SetValues(mantenimiento);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -94,15 +104,19 @@ namespace Proyecto_API__CRUD.Controllers
 
         // DELETE api/Mantenimiento/{id}
         [HttpDelete("{id}")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                if (_memory.EliminarMantenimiento(id))
+                var mantenimiento = await _context.Mantenimiento.FindAsync(id);
+                if (mantenimiento == null)
                 {
-                    return NoContent();
+                    return NotFound(new { Message = "Mantenimiento no encontrado para eliminación." });
                 }
-                return NotFound(new { Message = "Mantenimiento no encontrado para eliminación." });
+
+                _context.Mantenimiento.Remove(mantenimiento);
+                await _context.SaveChangesAsync();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -112,16 +126,20 @@ namespace Proyecto_API__CRUD.Controllers
 
         // GET api/Mantenimiento/search?term={term}
         [HttpGet("search")]
-        public ActionResult<IEnumerable<Mantenimiento>> BuscarMantenimientosPorCedula([FromQuery] string term)
+        public async Task<ActionResult<IEnumerable<Mantenimiento>>> BuscarMantenimientosPorCedula([FromQuery] string term)
         {
             try
             {
-                var clientes = _memory.ObtenerMantenimientos(term);
-                if (!clientes.Any())
+                var mantenimientos = await _context.Mantenimiento
+                     .Where(m => m.IdMantenimiento.ToString().Contains(term))
+                     .ToListAsync();
+
+                if (!mantenimientos.Any())
                 {
                     return NotFound(new { Message = "No se encontraron mantenimientos que coincidan con el término de búsqueda." });
                 }
-                return Ok(clientes);
+
+                return Ok(mantenimientos);
             }
             catch (Exception ex)
             {

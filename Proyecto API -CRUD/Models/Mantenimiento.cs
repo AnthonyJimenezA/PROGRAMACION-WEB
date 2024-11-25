@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Proyecto_API__CRUD.Models
 {
@@ -7,7 +8,7 @@ namespace Proyecto_API__CRUD.Models
         [Key]
         public int IdMantenimiento { get; set; }
 
-
+        [ForeignKey("Cliente")]
         public string IdCliente { get; set; }
 
         public DateTime FechaEjecutado { get; set; }
@@ -19,7 +20,8 @@ namespace Proyecto_API__CRUD.Models
         public decimal M2CercaViva { get; set; }
 
         public int DiasSinChapia => (DateTime.Now - FechaEjecutado).Days;
-
+        
+        [NotMapped]
         public DateTime FechaSiguienteChapia => CalcularFechaSiguienteChapia();
 
         public string PreferenciaFrecuencia { get; set; } 

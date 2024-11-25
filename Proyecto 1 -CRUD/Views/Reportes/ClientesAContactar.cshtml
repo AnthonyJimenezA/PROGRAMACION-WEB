@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Proyecto_1__CRUD.Models.ClienteReporteAContactar>
+
+@{
+    ViewData["Title"] = "Clientes a Contactar";
+}
+
+<div class="container">
+    <h1 class="mb-4">Clientes a Contactar la Próxima Semana</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID Cliente</th>
+                    <th>Nombre</th>
+                    <th>ID Mantenimiento</th>
+                    <th>Fecha Siguiente Chapia</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var cliente in Model)
+                    {
+                        <tr>
+                            <td>@cliente.ClienteId</td>
+                            <td>@cliente.Nombre</td>
+                            <td>@cliente.MantenimientoId</td>
+                            <td>@cliente.FechaSiguienteChapia.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center">No se encontraron clientes a contactar.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
